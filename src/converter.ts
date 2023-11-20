@@ -3,7 +3,7 @@ import * as fs from "fs";
 
 interface tasks {
     code: string;
-    language: string;
+    lang: string;
     exerciseID: string;
 }
 
@@ -30,25 +30,18 @@ try {
     throw err;
 }
 
-appendFile(
-    `opgaveFile.${task.language}`,
-    `${task.code}`,
-    "utf8",
-    function (err) {
-        if (err) {
-            console.log(err);
-            // append failed
-        } else {
-            console.log(`opgaveFile.${task.language} was appended!`);
-            // done
-        }
-    },
-);
-
-appendFile(`testFile.${task.language}`, `${test.code}`, "utf8", function (err) {
+appendFile(`taskFile.${task.lang}`, `${task.code}`, "utf8", function (err) {
     if (err) {
         console.log(err);
     } else {
-        console.log(`testFile.${task.language} was appended!`);
+        console.log(`taskFile.${task.lang} was appended!`);
+    }
+});
+
+appendFile(`testFile.${task.lang}`, `${test.code}`, "utf8", function (err) {
+    if (err) {
+        console.log(err);
+    } else {
+        console.log(`testFile.${task.lang} was appended!`);
     }
 });

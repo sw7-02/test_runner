@@ -1,30 +1,24 @@
 import { appendFile } from "node:fs";
 import * as fs from "fs";
 
-//import * as opgFile from "./opgFile.json";
-//import * as testFile from "./testFile.json";
-
-//let opg: opgave = JSON.parse(opgFile);
-//let test: tests = JSON.parse(testFile);
-
-interface opgave {
-    kode: string;
-    sprog: string;
+interface tasks {
+    code: string;
+    language: string;
     exerciseID: string;
 }
 
 interface tests {
-    kode: string;
+    code: string;
 }
 
-let opg: opgave;
+let task: tasks;
 let test: tests;
 
 try {
-    const opgFile = fs.readFileSync("./opgFile.json", "utf8");
-    opg = JSON.parse(opgFile);
+    const taskFile = fs.readFileSync("./taskFile.json", "utf8");
+    task = JSON.parse(taskFile);
 } catch (err) {
-    console.log("Error reading opgFile.json:", err);
+    console.log("Error reading taskFile.json:", err);
     throw err;
 }
 
@@ -36,20 +30,25 @@ try {
     throw err;
 }
 
-appendFile(`opgaveFile.${opg.sprog}`, `${opg.kode}`, "utf8", function (err) {
-    if (err) {
-        console.log(err);
-        // append failed
-    } else {
-        console.log(`opgaveFile.${opg.sprog} was appended!`);
-        // done
-    }
-});
+appendFile(
+    `opgaveFile.${task.language}`,
+    `${task.code}`,
+    "utf8",
+    function (err) {
+        if (err) {
+            console.log(err);
+            // append failed
+        } else {
+            console.log(`opgaveFile.${task.language} was appended!`);
+            // done
+        }
+    },
+);
 
-appendFile(`testFile.${opg.sprog}`, `${test.kode}`, "utf8", function (err) {
+appendFile(`testFile.${task.language}`, `${test.code}`, "utf8", function (err) {
     if (err) {
         console.log(err);
     } else {
-        console.log(`testFile.${opg.sprog} was appended!`);
+        console.log(`testFile.${task.language} was appended!`);
     }
 });

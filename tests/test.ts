@@ -2,11 +2,11 @@ const { expect } = require('chai');
 const child_process = require('child_process');
 const fs = require('fs');
 
-describe('Your Code', () => {
+describe('Test 1', () => {
   it('should compile and execute code', (done) => {
-    const compileCommand = 'gcc -o test test.c';
+    const compileCommand = 'gcc -o test1 test1.c';
 
-    const tempFilePath = './test'; 
+    const tempFilePath = './test1'; 
 
     child_process.exec(compileCommand, (compileError) => {
       if (compileError) {
@@ -31,4 +31,21 @@ describe('Your Code', () => {
       });
     });
   });
+});
+
+
+describe('Test 2', () => {
+    it('should not compile', (done) => {
+        const compileCommand = 'gcc -o test2 test2.c';
+
+        child_process.exec(compileCommand, (compileError, stderr) => {
+            if (compileError) {
+                expect(compileError).to.exist;
+                expect(compileError.message).to.contain('error: ‘x’ is used uninitialized');
+                // Perform assertions based on your expectations for a compiler error
+                //expect(stderr).//catch the error
+                done();
+            }
+        });
+    });
 });

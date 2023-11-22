@@ -47,6 +47,7 @@ function readFromFile(filePath: string): string {
 function compileAndRun(language: Language, programCode: string): void {
     let compileCommand: string;
     let runCommand: string;
+    let executableExtension: string;
 
     switch (language) {
         case Language.TypeScript:
@@ -64,6 +65,7 @@ function compileAndRun(language: Language, programCode: string): void {
         case Language.C:
             compileCommand = 'gcc -o temp temp.c';
             runCommand = './temp';
+            executableExtension = '.exe';
             break;
         default:
             console.error(`Unsupported language: ${language}`);
@@ -81,41 +83,39 @@ function compileAndRun(language: Language, programCode: string): void {
     const tempFilePath = `temp.${language}`;
     fs.writeFileSync(tempFilePath, programCode, 'utf-8');   
 
+    // Compile the code
     child_process.exec(compileCommand, () => {
-        child_process.execFile('./temp', (error,stdout,stderr)=>{
-            console.log(`\nstdout: ${stdout}`);
+        // Execute the compiled code
+        child_process.execFile('./temp', (error,stdout)=>{
+            console.log(`\nstdout: ${stdout}\n`);
     
             if (error) {
                 console.error(`exec error: ${error}`);
                 return;
-              }
-        });  
-    });
+            }
 
-    /*
-    testCases.forEach((testCase, index) => {
-        const expectedOutput = testCase.trim();
-        const result = programOutput === expectedOutput ? 'Passed' : 'Failed';
-        console.log(`Test Case ${index + 1}: ${result}`);
-    });
-    */
+            // Delete the temporary file after execution
+            fs.unlinkSync(tempFilePath);
+            console.log(`Temporary file ${tempFilePath} deleted.`);
 
-    // Cleanup temporary files
+            // Delete the compiled executable after execution
+            fs.unlinkSync(`./temp.exe`);
+            console.log(`Compiled executable ./temp.exe deleted.`);
+        });
+    });
     
-
 }
 
 
-
-const programFilePath = './\\src\\student1\\program.c';
+const programFilePath = './\\src\\student1\\program1.c';
 //const testSpecFilePath = "./\\src\\student1\\tests.txt";
 
 const language = detectLanguage(programFilePath);
-console.log("The langugage is: " + language);
+console.log("\nThe langugage is: " + language);
 
 const programCode = readFromFile(programFilePath);
 //const programCode = fs.readFileSync(programFilePath, 'utf-8');
-console.log(programCode);
+console.log("\n" + programCode);
 //const testCases = readFromFile(testSpecFilePath).split('\n');
 
 compileAndRun(language, programCode);

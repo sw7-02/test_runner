@@ -42,8 +42,7 @@ describe('Test 2', () => {
             if (compileError) {
                 expect(compileError).to.exist;
                 expect(compileError.message).to.contain('error: ‘x’ is used uninitialized');
-                // Perform assertions based on your expectations for a compiler error
-                //expect(stderr).//catch the error
+
                 done();
             }
         });

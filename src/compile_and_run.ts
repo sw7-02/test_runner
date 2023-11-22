@@ -1,8 +1,6 @@
 import * as fs from 'fs';
 import * as child_process from 'child_process';
 
-const cFilePath = './\\src\\student1\\program.c';
-
 // Enum representing supported programming languages
 interface ProgramInput {
   language: Language;
@@ -76,12 +74,6 @@ function compileAndRun(language: Language, programCode: string): void {
         process.exit(1);
     }
 
-    var options = {
-        timeout: 100,
-        stdio: 'inherit',
-        shell: true,
-    }
-
     // Create a temporary file with the appropriate extension
     const tempFilePath = `temp.${language}`;
     fs.writeFileSync(tempFilePath, programCode, 'utf-8');   
@@ -110,7 +102,7 @@ function compileAndRun(language: Language, programCode: string): void {
 }
 
 
-const programFilePath = './\\src\\student1\\program1.c';
+const programFilePath = './\\src\\student1\\program.c';
 //const testSpecFilePath = "./\\src\\student1\\tests.txt";
 
 const language = detectLanguage(programFilePath);

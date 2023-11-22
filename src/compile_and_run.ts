@@ -73,52 +73,29 @@ function compileAndRun(language: Language, programCode: string): void {
         process.exit(1);
     }
 
+    var options = {
+        timeout: 100,
+        stdio: 'inherit',
+        shell: true,
+    }
+
     // Create a temporary file with the appropriate extension
     const tempFilePath = `temp.${language}`;
-    fs.writeFileSync(tempFilePath, programCode);
+    fs.writeFileSync(tempFilePath, programCode, 'utf-8');
 
-    // Compile the program if needed
-    if (compileCommand) {
-        const gccPath = 'C:\\MinGW\\bin\\gcc.exe';
-        const compileProcess = child_process.spawnSync(
-            gccPath,
-            [tempFilePath],
-          );
+    //child_process.execSync(compileCommand);
+    
 
-        // Check for errors in the compile process
-        if (compileProcess.error) {
-            console.error(`Error compiling the program: ${compileProcess.error.message}`);
-            process.exit(1);
-        } else if (compileProcess.status !== 0) {  // Check the exit code of the compilation process
-            console.error(`Compilation failed with exit code ${compileProcess.status}`);
-            process.exit(1);
-        }
-    }
-
-    // Run the compiled or interpreted code
-    const runProcess = child_process.spawnSync(runCommand, [tempFilePath]);
-
-    // Log the entire runProcess object
-    console.log('runProcess:', runProcess);
-
-    // Log the standard output if it's defined
-    if (runProcess.stdout) {
-        console.log('Standard Output:');
-        console.log(runProcess.stdout.toString().trim());
-    } else {
-        console.log('No standard output produced by the program.');
-    }
-
-    // Log the standard error if it's defined
-    if (runProcess.stderr) {
-        console.log('\nStandard Error:');
-        console.log(runProcess.stderr.toString().trim());
-    } else {
-        console.log('No standard error produced by the program.');
-    }
-
-    //console.log(runProcess.stdout.toString().trim());
-    //const programOutput = runProcess.stdout.toString().trim();
+    child_process.exec(compileCommand, () => {
+        child_process.execFile('./temp.exe', (error,stdout,stderr)=>{
+            console.log("stdout: " + stdout);
+    
+            if (error) {
+                console.error("exec error: " + error);
+                return;
+              }
+        });  
+    });
 
     /*
     testCases.forEach((testCase, index) => {
@@ -128,29 +105,17 @@ function compileAndRun(language: Language, programCode: string): void {
     });
     */
 
-    // Cleanup temporary files
-    try {
-        fs.unlinkSync(tempFilePath);
-    } catch (unlinkError) {
-        console.error(`Error removing temporary file ${tempFilePath}: ${unlinkError.message}`);
-    }
 
-    // Remove compiled file for C
-    if (language === Language.C) {
-        try {
-            fs.unlinkSync('temp');
-        } catch (unlinkError) {
-            console.error(`Error removing compiled file 'temp': ${unlinkError.message}`);
-        }
-    }
+
+    // Cleanup temporary files
+    
+    
 }
 
 
 
 const programFilePath = './\\src\\student1\\program.c';
 //const testSpecFilePath = "./\\src\\student1\\tests.txt";
-console.log("hello");
-
 
 const language = detectLanguage(programFilePath);
 console.log("The langugage is: " + language);

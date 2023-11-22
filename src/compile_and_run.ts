@@ -36,10 +36,8 @@ function detectLanguage(filePath: string): Language {
 
 function readFromFile(filePath: string): string {
     try {
-        console.log("good");
-        return fs.readFileSync("filePath", 'utf-8');
+        return fs.readFileSync(filePath, 'utf-8');
     } catch (error) {
-        console.error("bad");
         //console.error(`Error reading file ${filePath}: ${error.Message}`);
         process.exit(1);
     }
@@ -81,17 +79,14 @@ function compileAndRun(language: Language, programCode: string): void {
 
     // Create a temporary file with the appropriate extension
     const tempFilePath = `temp.${language}`;
-    fs.writeFileSync(tempFilePath, programCode, 'utf-8');
-
-    //child_process.execSync(compileCommand);
-    
+    fs.writeFileSync(tempFilePath, programCode, 'utf-8');   
 
     child_process.exec(compileCommand, () => {
-        child_process.execFile('./temp.exe', (error,stdout,stderr)=>{
-            console.log("stdout: " + stdout);
+        child_process.execFile('./temp', (error,stdout,stderr)=>{
+            console.log(`\nstdout: ${stdout}`);
     
             if (error) {
-                console.error("exec error: " + error);
+                console.error(`exec error: ${error}`);
                 return;
               }
         });  
@@ -105,11 +100,9 @@ function compileAndRun(language: Language, programCode: string): void {
     });
     */
 
-
-
     // Cleanup temporary files
     
-    
+
 }
 
 
@@ -120,8 +113,8 @@ const programFilePath = './\\src\\student1\\program.c';
 const language = detectLanguage(programFilePath);
 console.log("The langugage is: " + language);
 
-//const programCode = readFromFile(programFilePath);
-const programCode = fs.readFileSync(programFilePath, 'utf-8');
+const programCode = readFromFile(programFilePath);
+//const programCode = fs.readFileSync(programFilePath, 'utf-8');
 console.log(programCode);
 //const testCases = readFromFile(testSpecFilePath).split('\n');
 

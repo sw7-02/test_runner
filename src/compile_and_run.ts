@@ -45,6 +45,7 @@ function readFromFile(filePath: string): string {
 function compileAndRun(language: Language, programCode: string): void {
     let compileCommand: string;
     let runCommand: string;
+    let executableExtension: string;
 
     switch (language) {
         case Language.TypeScript:
@@ -62,6 +63,7 @@ function compileAndRun(language: Language, programCode: string): void {
         case Language.C:
             compileCommand = 'gcc -o temp temp.c';
             runCommand = './temp';
+            executableExtension = '.exe';
             break;
         default:
             console.error(`Unsupported language: ${language}`);
@@ -74,10 +76,20 @@ function compileAndRun(language: Language, programCode: string): void {
     fs.writeFileSync(tempFilePath, programCode, 'utf-8');   
 
     // Compile the code
-    child_process.exec(compileCommand, () => {
+    child_process.exec(compileCommand, (error, stdout, stderr) => {
+        console.log(`\nCompilation stdout: ${stdout}`);
+        console.log(`\cCompilation stderr: ${stderr}\n`);
+
+        // If there's an error during compilation, print the error/warning message
+        if (error) {
+            console.error(`Compilation error/warning: ${error}`);
+            process.exit(1); // Exit the process or handle the error accordingly
+        }
+
         // Execute the compiled code
-        child_process.execFile('./temp', (error,stdout)=>{
-            console.log(`\nstdout: ${stdout}\n`);
+        child_process.execFile(runCommand, (error, stdout, stderr)=>{
+            console.log(`\nExecution stdout: ${stdout}\n`);
+            console.log(`\nExecution stderr: ${stderr}\n`);
     
             if (error) {
                 console.error(`exec error: ${error}`);
@@ -89,23 +101,23 @@ function compileAndRun(language: Language, programCode: string): void {
             console.log(`Temporary file ${tempFilePath} deleted.`);
 
             // Delete the compiled executable after execution
-            fs.unlinkSync(`./temp.exe`);
-            console.log(`Compiled executable ./temp.exe deleted.`);
+            fs.unlinkSync(`./temp${executableExtension}`);
+            console.log(`Compiled executable ./temp${executableExtension} deleted.`);
         });
     });
-    
+
 }
 
 
-const programFilePath = './\\src\\student1\\program.c';
+const programFilePath = './\\src\\student1\\program1.c';
 //const testSpecFilePath = "./\\src\\student1\\tests.txt";
 
 const language = detectLanguage(programFilePath);
-console.log("The langugage is: " + language);
+console.log("\nThe langugage is: " + language);
 
 const programCode = readFromFile(programFilePath);
 //const programCode = fs.readFileSync(programFilePath, 'utf-8');
-console.log(programCode);
+console.log("\n" + programCode);
 //const testCases = readFromFile(testSpecFilePath).split('\n');
 
 compileAndRun(language, programCode);

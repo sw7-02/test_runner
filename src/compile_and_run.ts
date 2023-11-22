@@ -94,11 +94,10 @@ function compileAndRun(language: Language, programCode: string): void {
             console.log(`Temporary file ${tempFilePath} deleted.`);
 
             // Delete the compiled executable after execution
-            fs.unlinkSync(`./temp.exe`);
+            fs.unlinkSync(`./temp${executableExtension}`);
             console.log(`Compiled executable ./temp.exe deleted.`);
         });
     });
-    
 }
 
 

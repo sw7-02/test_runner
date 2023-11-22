@@ -3,7 +3,11 @@ import * as child_process from 'child_process';
 
 const cFilePath = './\\src\\student1\\program.c';
 
-// Enum representing supported programming languages
+interface ProgramInput {
+  language: Language;
+  code: string;
+}
+
 enum Language {
     TypeScript = 'typescript',
     JavaScript = 'javascript',
@@ -11,7 +15,6 @@ enum Language {
     C = 'c',
 }
 
-// Function to detect the programming language based on file extension
 function detectLanguage(filePath: string): Language {
     const fileExtension = filePath.split('.').pop()?.toLowerCase();
 
@@ -40,7 +43,6 @@ function readFromFile(filePath: string): string {
     }
 }
 
-// Function to compile and run code based on the detected language
 //function compileAndRun(language: Language, programCode: string, testCases: string[]): void {
 function compileAndRun(language: Language, programCode: string): void {
     let compileCommand: string;
@@ -52,11 +54,11 @@ function compileAndRun(language: Language, programCode: string): void {
             runCommand = 'node';
             break;
         case Language.JavaScript:
-            compileCommand = '';
+            compileCommand = ''; // No compilation needed for JavaScript
             runCommand = 'node';
             break;
         case Language.Python:
-            compileCommand = '';
+            compileCommand = ''; // No compilation needed for Python
             runCommand = 'python';
             break;
         case Language.C:
@@ -69,32 +71,40 @@ function compileAndRun(language: Language, programCode: string): void {
         process.exit(1);
     }
 
+    var options = {
+        timeout: 100,
+        stdio: 'inherit',
+        shell: true,
+    }
+
     // Create a temporary file with the appropriate extension
     const tempFilePath = `temp.${language}`;
     fs.writeFileSync(tempFilePath, programCode, 'utf-8');   
 
-    // Compile the code
     child_process.exec(compileCommand, () => {
-        // Execute the compiled code
-        child_process.execFile('./temp', (error,stdout)=>{
-            console.log(`\nstdout: ${stdout}\n`);
+        child_process.execFile('./temp', (error,stdout,stderr)=>{
+            console.log(`\nstdout: ${stdout}`);
     
             if (error) {
                 console.error(`exec error: ${error}`);
                 return;
-            }
-
-            // Delete the temporary file after execution
-            fs.unlinkSync(tempFilePath);
-            console.log(`Temporary file ${tempFilePath} deleted.`);
-
-            // Delete the compiled executable after execution
-            fs.unlinkSync(`./temp.exe`);
-            console.log(`Compiled executable ./temp.exe deleted.`);
-        });
+              }
+        });  
     });
+
+    /*
+    testCases.forEach((testCase, index) => {
+        const expectedOutput = testCase.trim();
+        const result = programOutput === expectedOutput ? 'Passed' : 'Failed';
+        console.log(`Test Case ${index + 1}: ${result}`);
+    });
+    */
+
+    // Cleanup temporary files
     
+
 }
+
 
 
 const programFilePath = './\\src\\student1\\program.c';
@@ -111,3 +121,7 @@ console.log(programCode);
 compileAndRun(language, programCode);
 
 //compileAndRun(language, programCode, testCases);
+
+
+
+

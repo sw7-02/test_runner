@@ -3,6 +3,7 @@ import * as child_process from 'child_process';
 
 const cFilePath = './\\src\\student1\\program.c';
 
+// Enum representing supported programming languages
 interface ProgramInput {
   language: Language;
   code: string;
@@ -15,6 +16,7 @@ enum Language {
     C = 'c',
 }
 
+// Function to detect the programming language based on file extension
 function detectLanguage(filePath: string): Language {
     const fileExtension = filePath.split('.').pop()?.toLowerCase();
 
@@ -43,6 +45,7 @@ function readFromFile(filePath: string): string {
     }
 }
 
+// Function to compile and run code based on the detected language
 //function compileAndRun(language: Language, programCode: string, testCases: string[]): void {
 function compileAndRun(language: Language, programCode: string): void {
     let compileCommand: string;

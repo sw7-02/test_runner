@@ -9,53 +9,55 @@ interface exerciseAPI {
 }
 
 interface tests {
+    lang: string,
     code: string;
 }
 
-
-function createDirectory(exerciseAPI: exerciseAPI, tests: tests): void {
-    if (!fs.existsSync(exerciseAPI.studentID)) {
-        fs.mkdirSync(exerciseAPI.studentID);
-        console.log(`Directory ${exerciseAPI.studentID} created!`);
+function createDirectory(directory: string): void {
+    if (!fs.existsSync(`src/${directory}`)) {
+        fs.mkdirSync(`src/${directory}`);
+        console.log(`Directory src/${directory} created!`);
     }
     else {
-        console.log(`Directory ${exerciseAPI.studentID} already exists!`);
+        console.log(`Directory src/${directory} already exists!`);
     }
-
-    createFiles(exerciseAPI, tests);
-
 }
 
-const createFiles = (exerciseAPI: exerciseAPI, tests: tests): void => {
-    appendFile(`${exerciseAPI.studentID}/exerciseFile.${exerciseAPI.lang}`, `${exerciseAPI.code}`, "utf8", function (err) {
+const createFiles = (directoryPath: string, content: string): void => {
+    appendFile(directoryPath, content, "utf8", function (err) {
         if (err) {
             console.log(err);
         } else {
-            console.log(`exerciseFile.${exerciseAPI.lang} was appended!`);
-        }
-    });
-
-    appendFile(`${exerciseAPI.studentID}/tests/testFile.${exerciseAPI.lang}`, `${tests.code}`, "utf8", function (err) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log(`testFile.${exerciseAPI.lang} was appended!`);
+            console.log(`file was appended!`);
         }
     });
 }
-
 
 //example json converted to typescript
 const exerciseData: exerciseAPI = {
-    lang: "typescript",
-    code: "console.log('Hello, World!');",
+    lang: "c",
+    code: "printf('exercise');",
     exerciseID: "123456",
-    studentID: "789012"
+    studentID: "7890124"
 };
 
 const testData: tests = {
-    code: "console.log('Hello, World!');",
+    lang: "c",
+    code: "printf('test');"
 };
 
-createDirectory(exerciseData, testData);
+const main_code = `
+#include "src/${exerciseData.studentID}/exerciseFile.${exerciseData.lang}" 
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include "src/${exerciseData.studentID}/tests/testFile.${testData.lang}" 
+int main(void) 
+{tests_run_all();}`;
+
+createDirectory(exerciseData.studentID);
+createDirectory(`${exerciseData.studentID}/tests`);
+createFiles(`src/${exerciseData.studentID}/exerciseFile.${exerciseData.lang}`, `${exerciseData.code}`);
+createFiles(`src/${exerciseData.studentID}/tests/testFile.${testData.lang}`, `${testData.code}`);
+createFiles(`src/${exerciseData.studentID}/tests/main.${testData.lang}`, `${main_code}`);
 

@@ -1,13 +1,7 @@
 import * as fs from 'fs';
 import * as child_process from 'child_process';
-import { stderr } from 'process';
 
 // Enum representing supported programming languages
-interface ProgramInput {
-  language: Language;
-  code: string;
-}
-
 enum Language {
     TypeScript = 'typescript',
     JavaScript = 'javascript',
@@ -80,55 +74,31 @@ function compileAndRun(language: Language, programCode: string): void {
     fs.writeFileSync(tempFilePath, programCode, 'utf-8');   
 
 
-    if (compileCommand) {
+    //if (compileCommand) {
         // Compile the code
-        child_process.exec(compileCommand, (error, stdout, stderr) => {
-            console.log(`\nCompilation stdout: ${stdout}`);
+    child_process.exec(compileCommand, (error, stdout, stderr) => {
+        console.log(`\nCompilation stdout: ${stdout}`);
+
+        if (stderr) {
+            console.log(`\nCompilation stderr: ${stderr}\n`);
+            process.exit(1); // Exit the process or handle the error accordingly
+        }
+        
+        // If there's an error during compilation, print the error/warning message
+        if (error) {
+            console.error(`Compilation error/warning: ${error}`);
+            process.exit(1); // Exit the process or handle the error accordingly
+        }
+        
+        // Execute the compiled code
+        child_process.execFile(runCommand, (error,stdout, stderr)=>{
+            console.log(`\nExecution stdout: ${stdout}\n`);
+            console.log(`\nExecution stderr: ${stderr}\n`);
 
             if (stderr) {
                 console.log(`\nCompilation stderr: ${stderr}\n`);
                 process.exit(1); // Exit the process or handle the error accordingly
             }
-            
-            // If there's an error during compilation, print the error/warning message
-            if (error) {
-                console.error(`Compilation error/warning: ${error}`);
-                process.exit(1); // Exit the process or handle the error accordingly
-            }
-            
-            // Execute the compiled code
-            child_process.execFile(runCommand, (error,stdout, stderr)=>{
-                console.log(`\nExecution stdout: ${stdout}\n`);
-                console.log(`\nExecution stderr: ${stderr}\n`);
-
-                if (stderr) {
-                    console.log(`\nCompilation stderr: ${stderr}\n`);
-                    process.exit(1); // Exit the process or handle the error accordingly
-                }
-        
-                if (error) {
-                    console.error(`exec error: ${error}`);
-                    return;
-                }
-
-                // Delete the temporary file after execution
-                fs.unlinkSync(tempFilePath);
-                console.log(`Temporary file ${tempFilePath} deleted.`);
-
-                // Delete the compiled executable after execution
-                fs.unlinkSync(`./temp${executableExtension}`);
-                console.log(`Compiled executable ./temp.exe deleted.`);
-            });
-        });
-
-    // hvis vi vil have andre sprog også, så er det her
-    /*} else {
-        console.log("\nSUUUP\n");
-
-        // Execute the compiled code
-        child_process.execFile(runCommand + `.${language}`, (error,stdout)=>{
-            console.log(`\nExecution stdout: ${stdout}\n`);
-            console.log(`\nExecution stderr: ${stderr}\n`);
     
             if (error) {
                 console.error(`exec error: ${error}`);
@@ -141,28 +111,21 @@ function compileAndRun(language: Language, programCode: string): void {
 
             // Delete the compiled executable after execution
             fs.unlinkSync(`./temp${executableExtension}`);
-            console.log(`Compiled executable ./temp.exe deleted.`);
+            console.log(`Compiled executable ./temp${executableExtension} deleted.`);
         });
-    }
-    */
+    });
 }
 
 
-const programFilePath = './\\src\\student1\\addTwo.py';
-//const testSpecFilePath = "./\\src\\student1\\tests.txt";
+//const programFilePath = './\\src\\student1\\program2.c';
+const programFilePath = './\\src\\student1\\tests\\main.c';
+const testSpecFilePath = "./\\src\\student1\\test-spec.json";
 
 const language = detectLanguage(programFilePath);
-console.log("\nThe langugage is: " + language);
+//console.log("\nThe langugage is: " + language);
 
 const programCode = readFromFile(programFilePath);
-//const programCode = fs.readFileSync(programFilePath, 'utf-8');
+//const testCases: TestCase[] = JSON.parse(readFromFile(testSpecFilePath));
 console.log("\n" + programCode);
-//const testCases = readFromFile(testSpecFilePath).split('\n');
 
 compileAndRun(language, programCode);
-
-//compileAndRun(language, programCode, testCases);
-
-
-
-

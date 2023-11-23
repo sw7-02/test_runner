@@ -1,0 +1,5 @@
+[
+  { "input": "2 3", "expected": "5" },
+  { "input": "abc xyz", "expected": "Invalid input" },
+  { "input": "5 7", "expected": "12" }
+]

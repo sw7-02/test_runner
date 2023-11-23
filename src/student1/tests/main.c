@@ -1,4 +1,3 @@
-//#include "../program.c"
 #include "src/student1/program.c"
 
 #include <stdio.h>

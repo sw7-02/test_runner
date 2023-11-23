@@ -10,7 +10,12 @@ app.use(cors());
 app.use(helmet());
 app.use(bodyParser.json());
 
-app.get("/", (req, res) => res.send("Hello World!"));
+app.post("/", async (req, res) => {
+    console.log(req.body);
+    res.send("Hello World!");
+})
+
+
 
 app.listen(3000, () => {
     console.log("Server started on port 3000!");

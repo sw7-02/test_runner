@@ -1,4 +1,4 @@
-import { appendFile } from "node:fs";
+import { appendFile, appendFileSync, readFile, readFileSync } from "node:fs";
 import * as fs from "fs";
 
 interface  ExerciseTest {
@@ -9,7 +9,7 @@ interface  ExerciseTest {
 }
 
 interface TestCase {
-    testCaseId: number;
+    testCaseId: string;
     code: string;
 }
 
@@ -24,54 +24,23 @@ function createDirectory(directory: string): void {
 }
 
 const createFiles = (directoryPath: string, content: string, include?: string): void => {
-    if(include) {
-        appendFile(directoryPath, `${include}\n`, "utf8", function (err) {
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(`include was appended!`);
-            }
-        });
-    }
+    if(include)
+        appendFileSync(directoryPath, `${include}\n`, "utf8");
 
-    appendFile(directoryPath, `${content}\n`, "utf8", function (err) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log(`file was appended!`);
-        }
-    });
+    appendFileSync(directoryPath, `${content}\n`, "utf8");
 }
 
-const exerciseTest = {
-    "language": "c",
-    "code": "print('Hello, World!')",
-    "studentID": "67890",
-    "testCases": [
-        { "testCaseId": 1, "code": "int main(void) { tests_run_all();} " },
-        { "testCaseId": 2, "code": "print('Test Case 2')" }
-    ]
-};
+function testRunnerRunner (exerciseTest: ExerciseTest) {
+    createDirectory(exerciseTest.studentID);
+    createDirectory(`${exerciseTest.studentID}/tests`);
+    createFiles(`src/${exerciseTest.studentID}/exerciseFile.${exerciseTest.language}`, `${exerciseTest.code}`);
 
-const exerciseTestJSON = JSON.stringify(exerciseTest, null, 2);
+    exerciseTest.testCases.forEach(testCase => {
+        createFiles(`src/${exerciseTest.studentID}/tests/testFile${testCase.testCaseId}.${exerciseTest.language}`, 
+        `${testCase.code}`, `#include "src/${exerciseTest.studentID}/exerciseFile.${exerciseTest.language}"`);
+        testCase.code = readFileSync(`src/${exerciseTest.studentID}/tests/testFile${testCase.testCaseId}.${exerciseTest.language}`, "utf-8");
+    });    
 
-// Parse JSON and cast to interfaces
-const parsedExerciseTest: ExerciseTest = JSON.parse(exerciseTestJSON);
+}
 
-const main_code = `
-#include "src/${exerciseTest.studentID}/exerciseFile.${exerciseTest.language}" 
-#include <stdio.h> 
-#include <stdlib.h> 
-#include <string.h> 
-#include "src/${exerciseTest.studentID}/tests/testFile.${exerciseTest.language}" 
-int main(void) 
-{tests_run_all();}`;
-
-createDirectory(exerciseTest.studentID);
-createDirectory(`${exerciseTest.studentID}/tests`);
-createFiles(`src/${exerciseTest.studentID}/exerciseFile.${exerciseTest.language}`, `${exerciseTest.code}`);
-
-parsedExerciseTest.testCases.forEach(testCase => 
-    createFiles(`src/${exerciseTest.studentID}/tests/testFile${testCase.testCaseId}.${exerciseTest.language}`, `${testCase.code}`, `#include src/${exerciseTest.studentID}/exerciseFile.${exerciseTest.language}`));    
-
-//createFiles(`src/${exerciseTest.studentID}/tests/main.${exerciseTest.language}`, `${main_code}`);
+export {testRunnerRunner, ExerciseTest, TestCase};

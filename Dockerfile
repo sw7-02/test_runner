@@ -11,6 +11,7 @@ RUN chown node:node ./
 RUN apk add --update --no-cache openssl1.1-compat
 #RUN apk update && apk upgrade openssl
 USER node
+RUN apk add libcunit libcunit-dev
 
 # This stage is strictly for development dependencies
 ARG NODE_ENV=development

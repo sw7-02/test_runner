@@ -1,5 +1,7 @@
-import {testRunnerRunner, ExerciseTest, TestCase} from "./converter";
-import {compileAndRun, readFromFile, Language} from "./compile_and_run";
+import * as fs from "fs";
+import {testRunnerRunner, ExerciseTest} from "./converter";
+import {compileAndRun} from "./compile_and_run";
+import { ChildProcess } from "child_process";
 
 interface FailReason {
     test_case_id: string
@@ -57,22 +59,27 @@ int main(void) {test_program1();}
     ]
 };
 
-
+// Convert JSON to ExerciseTest instance
 const exerciseTestJSON = JSON.stringify(exerciseTest, null, 2);
 // Parse JSON and cast to interfaces
 const parsedExerciseTest: ExerciseTest = JSON.parse(exerciseTestJSON);
 
-
-// compile
-const programFilePath = './\\src\\student1\\tests\\main.c';
-const testSpecFilePath = "./\\src\\student1\\test-spec.json";
-
 // convert parsedExerciseTest to directories and files
 testRunnerRunner(parsedExerciseTest);
-console.log("\n\n here");
 
 // Compile and run tests
-parsedExerciseTest.testCases.forEach(testCase => 
-        compileAndRun(parsedExerciseTest.language, testCase.code, testCase.testCaseId));    
+parsedExerciseTest.testCases.forEach(testCase => {
+    compileAndRun(parsedExerciseTest.language, testCase.code, testCase.testCaseId);
+});
 
 
+
+/*
+try {
+    // Delete student directory synchronously
+    fs.rmSync(`src/${parsedExerciseTest.studentID}`, { recursive: true });
+    console.log(`${parsedExerciseTest.studentID} directory deleted successfully`);
+} catch (err) {
+    console.error(`Error deleting directory: ${err}`);
+}
+*/

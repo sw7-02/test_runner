@@ -36,8 +36,8 @@ function testRunnerRunner (exerciseTest: ExerciseTest) {
     createFiles(`src/${exerciseTest.studentID}/exerciseFile.${exerciseTest.language}`, `${exerciseTest.code}`);
 
     exerciseTest.testCases.forEach(testCase => {
-        createFiles(`src/${exerciseTest.studentID}/tests/testFile${testCase.testCaseId}.${exerciseTest.language}`, 
-        `${testCase.code}`, `#include "src/${exerciseTest.studentID}/exerciseFile.${exerciseTest.language}"`);
+        createFiles(`src/${exerciseTest.studentID}/tests/testFile${testCase.testCaseId}.${exerciseTest.language}`, `${testCase.code}`, 
+            `#include "src/${exerciseTest.studentID}/exerciseFile.${exerciseTest.language}"`);
         testCase.code = readFileSync(`src/${exerciseTest.studentID}/tests/testFile${testCase.testCaseId}.${exerciseTest.language}`, "utf-8");
     });    
 

@@ -31,6 +31,7 @@ int main(void) {
 } 
         `},
         { "testCaseId": 2, "code": `
+<<<<<<< Updated upstream
 
         #include <CUnit/CUnit.h>
         #include <CUnit/Basic.h>
@@ -79,6 +80,16 @@ int main(void) {
                 return 0;
             }
         }
+=======
+#include <CUnit/CUnit.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(void) {
+    CU_assert(addTwoNumbers(1,2) == 2);
+}       
+>>>>>>> Stashed changes
         `}
     ]
 };
@@ -104,4 +115,19 @@ parsedExerciseTest.testCases.forEach(testCase => {
     compileAndRun(parsedExerciseTest.language, testCase.code, testCase.testCaseId)    
 
 });
+<<<<<<< Updated upstream
 //put respsonse JSON, when JSON array.length == parsedExerciseTest.testCases.length send response
+=======
+
+// put respsonse JSON, when JSON array.length == parsedExerciseTest.testCases.length send response
+
+/*
+try {
+    // Delete student directory synchronously
+    fs.rmSync(`src/${parsedExerciseTest.studentID}`, { recursive: true });
+    console.log(`${parsedExerciseTest.studentID} directory deleted successfully`);
+} catch (err) {
+    console.error(`Error deleting directory: ${err}`);
+}
+*/
+>>>>>>> Stashed changes

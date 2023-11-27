@@ -72,10 +72,12 @@ function compileAndRun(language: string, programCode: string, test_case_id: stri
                 console.log(`\nExecution stdout: ${stdout}\n`);
 
             // Delete the temporary file after execution
+            //TODO: Change to fs.unlink() for extra performance
             fs.unlinkSync(tempFilePath);
             console.log(`Temporary file ${tempFilePath}${test_case_id} deleted.`);
 
             // Delete the compiled executable after execution
+            //TODO: Change to fs.unlink() for extra performance
             fs.unlinkSync(`./temp${test_case_id}${executableExtension}`);
             console.log(`Compiled executable ./temp${test_case_id}${executableExtension} deleted.`);
         });

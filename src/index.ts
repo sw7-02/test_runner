@@ -2,6 +2,7 @@ import express from "express";
 import * as bodyParser from "body-parser";
 import helmet from "helmet";
 import cors from "cors";
+import { ExerciseTest } from "./converter";
 
 const app = express();
 
@@ -12,6 +13,11 @@ app.use(bodyParser.json());
 
 app.post("/", async (req, res) => {
     console.log(req.body);
+    const exerciseTest = req.body as ExerciseTest
+    if(!exerciseTest){
+        res.status(400).send("All necessary parameters were not provided");
+    }
+    
     res.send("Hello World!");
 })
 

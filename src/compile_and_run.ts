@@ -20,7 +20,6 @@ function readFromFile(filePath: string): string {
 }
 
 // Function to compile and run code based on the detected language
-//function compileAndRun(language: Language, programCode: string, testCases: string[]): void {
 function compileAndRun(language: string, programCode: string, test_case_id: string): void {
     let compileCommand: string;
     let runCommand: string;
@@ -54,31 +53,23 @@ function compileAndRun(language: string, programCode: string, test_case_id: stri
     const tempFilePath = `temp${test_case_id}.${language}`;
     fs.writeFileSync(tempFilePath, programCode, 'utf-8');   
 
-
-    //if (compileCommand) {
-        // Compile the code
+    // Compile the code
     child_process.exec(compileCommand, (error, stdout, stderr) => {
-        if (stderr) {
+        if (stderr)
             console.log(`\nCompilation stderr: ${stderr}\n`);
-            process.exit(1); // Exit the process or handle the error accordingly
-        } else if (error) {
+        else if (error)
             console.error(`Compilation error: ${error}`);
-            process.exit(1); // Exit the process or handle the error accordingly
-        } else {
+        else
             console.log(`\nCompilation stdout: ${stdout}`);
-        }
         
         // Execute the compiled code
         child_process.execFile(runCommand, (error,stdout, stderr)=>{
-            if (stderr) {
+            if (stderr)
                 console.log(`\nExecution stderr: ${stderr}\n`);
-                process.exit(1); // Exit the process or handle the error accordingly
-            } else if (error) {
+            else if (error)
                 console.error(`Execution error: ${error}`);
-                return;
-            } else {
+            else
                 console.log(`\nExecution stdout: ${stdout}\n`);
-            }
 
             // Delete the temporary file after execution
             fs.unlinkSync(tempFilePath);

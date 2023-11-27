@@ -39,7 +39,7 @@ function compileAndRun(language: string, programCode: string, test_case_id: stri
             runCommand = 'python';
             break;
         case Language.C:
-            compileCommand = `gcc -o temp${test_case_id} temp${test_case_id}.c`;
+            compileCommand = `gcc -o temp${test_case_id} temp${test_case_id}.c -lcunit`;
             runCommand = `./temp${test_case_id}`;
             executableExtension = '.exe';
             break;
@@ -53,14 +53,13 @@ function compileAndRun(language: string, programCode: string, test_case_id: stri
     const tempFilePath = `temp${test_case_id}.${language}`;
     fs.writeFileSync(tempFilePath, programCode, 'utf-8');   
 
+    console.log(`\n ITERATION: ${test_case_id}\n`);
+
     // Compile the code
     child_process.exec(compileCommand, (error, stdout, stderr) => {
-        if (stderr)
-            console.log(`\nCompilation stderr: ${stderr}\n`);
-        else if (error)
+        if (error)
             console.error(`Compilation error: ${error}`);
-        else
-            console.log(`\nCompilation stdout: ${stdout}`);
+        console.log(`\nCompilation stdout: ${stdout}`);
         
         // Execute the compiled code
         child_process.execFile(runCommand, (error,stdout, stderr)=>{
@@ -68,8 +67,7 @@ function compileAndRun(language: string, programCode: string, test_case_id: stri
                 console.log(`\nExecution stderr: ${stderr}\n`);
             else if (error)
                 console.error(`Execution error: ${error}`);
-            else
-                console.log(`\nExecution stdout: ${stdout}\n`);
+            console.log(`\nExecution stdout: ${stdout}\n`);
 
             // Delete the temporary file after execution
             //TODO: Change to fs.unlink() for extra performance

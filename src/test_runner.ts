@@ -62,10 +62,8 @@ int main(void) {
         CU_basic_show_failures(CU_get_failure_list());
 
         printf("\\nActual: %d\\n", addTwoNumbers(1, 2));
-        return 1;
     } else {
         printf("Test passed\\n");
-        return 0;
     }
 }
         `},

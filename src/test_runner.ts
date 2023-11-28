@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import {testRunnerRunner, ExerciseTest} from "./converter";
 import {compileAndRun} from "./compile_and_run";
-import { ChildProcess } from "child_process";
 
 interface FailReason {
     test_case_id: string
@@ -122,17 +121,35 @@ const exerciseTestJSON = JSON.stringify(exerciseTest, null, 2);
 // Parse JSON and cast to interfaces
 const parsedExerciseTest: ExerciseTest = JSON.parse(exerciseTestJSON);
     
-
-// compile
-const programFilePath = './\\src\\student1\\tests\\main.c';
-const testSpecFilePath = "./\\src\\student1\\test-spec.json";
-
 // convert parsedExerciseTest to directories and files
 testRunnerRunner(parsedExerciseTest);
 
+
 // Compile and run tests
-parsedExerciseTest.testCases.forEach(testCase => 
-        compileAndRun(parsedExerciseTest.language, testCase.code, testCase.testCaseId));    
+async function runAllTests() {
+    try {
+        for (const testCase of parsedExerciseTest.testCases) {
+            const result = await compileAndRun(parsedExerciseTest.language, testCase.code, testCase.testCaseId)
+                .then((res) => {
+                    console.log("Iteration OK");
+                    return res;
+                })
+                .catch((error) => {
+                    console.error("Inner error: " + error);
+                    // You may choose to return a default value or rethrow the error here.
+                    // Returning undefined might be misleading in the log statement below.
+                });
+
+            console.log(`\n\n whats good \n\n`);
+        }
+    } catch (error) {
+        console.error("OUTER ERROR HAS BEEN FOUND: "+ error);
+    }
+}
+
+// Call the async function
+runAllTests();
+
 
 // put respsonse JSON, when JSON array.length == parsedExerciseTest.testCases.length send response
 

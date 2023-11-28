@@ -23,20 +23,6 @@ interface TestError extends Error {
     errorCode: string
 }
 
-//Create custom error class
-/*
-class TestError extends Error {
-    errorCode: string;
-    constructor(message: string, errorCode: string) {
-        super(message);
-        this.errorCode = errorCode;
-        this.name = "CompileError";
-    }   
-}
-*/
-
-
-
 const exec = promisify(child_process.exec);
 const execFile = promisify(child_process.execFile);
 
@@ -44,7 +30,6 @@ function readFromFile(filePath: string): string {
     try {
         return fs.readFileSync(filePath, 'utf-8');
     } catch (error) {
-        //console.error(`Error reading file ${filePath}: ${error.Message}`);
         process.exit(1);
     }
 }
@@ -58,7 +43,6 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
         // Create temporary file path
         const tempFilePath = `src/${exerciseTest.studentID}/temp${test_case_id}.${exerciseTest.language}`
         const executableFilePath = `src/${exerciseTest.studentID}/temp${test_case_id}`
-
 
         switch (exerciseTest.language) {
             case Language.TypeScript:
@@ -141,7 +125,6 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
             }
         );
     });
-    
 }
 
 export {compileAndRun, readFromFile, Language, TestResponse, TestError};

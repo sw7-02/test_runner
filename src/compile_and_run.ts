@@ -68,7 +68,8 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
                 async (res) => {
                     // Execute the compiled code
                     await execFile(runCommand).then((res) => {
-                        console.log(`\nExecution stdout: ${res.stdout}\n`);
+                        var result = res.stdout.substring(res.stdout.indexOf("Test"));
+                        console.log(`\nExecution stdout: ${result}\n`);
                     }, (reason) => {
                             console.log(`\nExecution stderr: ${reason.stderr}\n`);
                             throw new Error("Execution Error");

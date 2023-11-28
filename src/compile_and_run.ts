@@ -58,10 +58,8 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
                     reject(`Unsupported Language: ${exerciseTest.language}`);
                     return process.exit(1);
             }
-            //const tempFilePath = `temp${test_case_id}.${exerciseTest.language}`;
-            fs.writeFileSync(tempFilePath, testCode, 'utf-8');   
 
-            console.log(`\n ITERATION: ${test_case_id}\n`);
+            fs.writeFileSync(tempFilePath, testCode, 'utf-8');   
 
             // Compile the code
             await exec(compileCommand).then(
@@ -78,22 +76,7 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
                         console.error(`Compilation error: ${reason.stderr}`);
                         throw new Error("Compilation Error");
                 }
-            ).finally(() => {
-                /*
-                try{
-                    // Delete the temporary file after execution
-                    //TODO: Change to fs.unlink() for extra performance
-                    fs.unlinkSync(tempFilePath);
-                    console.log(`Temporary file ${tempFilePath}${test_case_id} deleted.`);
-                    // Delete the compiled executable after execution
-                    //TODO: Change to fs.unlink() for extra performance
-                    fs.unlinkSync(`./temp${test_case_id}${executableExtension}`);
-                    console.log(`Compiled executable ./temp${test_case_id}${executableExtension} deleted.`);
-                }catch (cleanupError) {
-                    console.error(`Error during cleanup: ${cleanupError}`);
-                }
-                */                
-            });
+            );
             resolve();
         } catch (error) {
             reject(error);

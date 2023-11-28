@@ -140,17 +140,6 @@ async function runAllTests() {
     try {
         for (const testCase of parsedExerciseTest.testCases) {
             const result = await compileAndRun(parsedExerciseTest, testCase.code, testCase.testCaseId)
-                .then((res) => {
-                    console.log("Iteration OK");
-                    return res;
-                });
-                /*
-                .catch((error) => {
-                    console.error("Inner error: " + error);
-                    reject
-                    // You may choose to return a default value or rethrow the error here.
-                    // Returning undefined might be misleading in the log statement below.
-                });*/
         }
     } catch (error) {
         console.error("OUTER ERROR HAS BEEN FOUND: "+ error);
@@ -161,16 +150,3 @@ async function runAllTests() {
 
 // Call the async function
 runAllTests();
-
-
-// put respsonse JSON, when JSON array.length == parsedExerciseTest.testCases.length send response
-
-/*
-try {
-    // Delete student directory synchronously
-    fs.rmSync(`src/${parsedExerciseTest.studentID}`, { recursive: true });
-    console.log(`${parsedExerciseTest.studentID} directory deleted successfully`);
-} catch (err) {
-    console.error(`Error deleting directory: ${err}`);
-}
-*/

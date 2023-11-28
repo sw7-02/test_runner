@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import {testRunnerRunner, ExerciseTest} from "./converter";
 import {compileAndRun} from "./compile_and_run";
+import { rejects } from "assert";
 
 interface FailReason {
     test_case_id: string
@@ -124,26 +125,37 @@ const parsedExerciseTest: ExerciseTest = JSON.parse(exerciseTestJSON);
 // convert parsedExerciseTest to directories and files
 testRunnerRunner(parsedExerciseTest);
 
+async function deleteDirectory(directoryPath: string): Promise<void> {
+    try {
+        await fs.promises.rm(directoryPath, { recursive: true });
+        console.log(`Directory ${directoryPath} deleted successfully.`);
+    } catch (error) {
+        console.error(`Error deleting directory ${directoryPath}: ${error}`);
+    }
+}
+
 
 // Compile and run tests
 async function runAllTests() {
     try {
         for (const testCase of parsedExerciseTest.testCases) {
-            const result = await compileAndRun(parsedExerciseTest.language, testCase.code, testCase.testCaseId)
+            const result = await compileAndRun(parsedExerciseTest, testCase.code, testCase.testCaseId)
                 .then((res) => {
                     console.log("Iteration OK");
                     return res;
-                })
+                });
+                /*
                 .catch((error) => {
                     console.error("Inner error: " + error);
+                    reject
                     // You may choose to return a default value or rethrow the error here.
                     // Returning undefined might be misleading in the log statement below.
-                });
-
-            console.log(`\n\n whats good \n\n`);
+                });*/
         }
     } catch (error) {
         console.error("OUTER ERROR HAS BEEN FOUND: "+ error);
+    } finally {
+        deleteDirectory(`src/${parsedExerciseTest.studentID}`);
     }
 }
 

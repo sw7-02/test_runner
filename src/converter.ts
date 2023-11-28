@@ -37,7 +37,7 @@ function testRunnerRunner (exerciseTest: ExerciseTest) {
 
     exerciseTest.testCases.forEach(testCase => {
         createFiles(`src/${exerciseTest.studentID}/tests/testFile${testCase.testCaseId}.${exerciseTest.language}`, `${testCase.code}`, 
-            `#include "src/${exerciseTest.studentID}/exerciseFile.${exerciseTest.language}"`);
+            `#include "exerciseFile.${exerciseTest.language}"`);
         testCase.code = readFileSync(`src/${exerciseTest.studentID}/tests/testFile${testCase.testCaseId}.${exerciseTest.language}`, "utf-8");
     });    
 

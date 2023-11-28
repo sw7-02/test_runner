@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as child_process from 'child_process';
 import { promisify } from 'util';
+import { ExerciseTest } from './converter';
 
 // Enum representing supported programming languages
 enum Language {
@@ -23,14 +24,18 @@ function readFromFile(filePath: string): string {
 }
 
 // Function to compile and run code based on the detected language
-async function compileAndRun(language: string, programCode: string, test_case_id: string): Promise<void> {
+async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_case_id: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
         try {
             let compileCommand: string;
             let runCommand: string;
-            //let executableExtension: string;
+            let executableExtension: string;
+            // Create temporary file path
+            const tempFilePath = `src/${exerciseTest.studentID}/temp${test_case_id}.${exerciseTest.language}`
+            const executableFilePath = `src/${exerciseTest.studentID}/temp${test_case_id}`
 
-            switch (language) {
+
+            switch (exerciseTest.language) {
                 case Language.TypeScript:
                     compileCommand = 'tsc';
                     runCommand = 'node';
@@ -44,27 +49,25 @@ async function compileAndRun(language: string, programCode: string, test_case_id
                     runCommand = 'python';
                     break;
                 case Language.C:
-                    compileCommand = `gcc -o temp${test_case_id} temp${test_case_id}.c -lcunit`;
-                    runCommand = `./temp${test_case_id}`;
+                    compileCommand = `gcc -o ${executableFilePath} ${tempFilePath} -lcunit`;
+                    runCommand = `./${executableFilePath}`;
                     //executableExtension = '.exe';
                     break;
                 default:
-                    console.error(`Unsupported language: ${language}`);
-                    reject(`Unsupported Language: ${language}`);
+                    console.error(`Unsupported language: ${exerciseTest.language}`);
+                    reject(`Unsupported Language: ${exerciseTest.language}`);
                     return process.exit(1);
             }
-
-            // Create a temporary file with the appropriate extension
-            const tempFilePath = `temp${test_case_id}.${language}`;
-            fs.writeFileSync(tempFilePath, programCode, 'utf-8');   
+            //const tempFilePath = `temp${test_case_id}.${exerciseTest.language}`;
+            fs.writeFileSync(tempFilePath, testCode, 'utf-8');   
 
             console.log(`\n ITERATION: ${test_case_id}\n`);
 
             // Compile the code
             await exec(compileCommand).then(
-                (res) => {
+                async (res) => {
                     // Execute the compiled code
-                    execFile(runCommand).then((res) => {
+                    await execFile(runCommand).then((res) => {
                         console.log(`\nExecution stdout: ${res.stdout}\n`);
                     }, (reason) => {
                             console.log(`\nExecution stderr: ${reason.stderr}\n`);
@@ -75,6 +78,7 @@ async function compileAndRun(language: string, programCode: string, test_case_id
                         throw new Error("Compilation Error");
                 }
             ).finally(() => {
+                /*
                 try{
                     // Delete the temporary file after execution
                     //TODO: Change to fs.unlink() for extra performance
@@ -82,12 +86,12 @@ async function compileAndRun(language: string, programCode: string, test_case_id
                     console.log(`Temporary file ${tempFilePath}${test_case_id} deleted.`);
                     // Delete the compiled executable after execution
                     //TODO: Change to fs.unlink() for extra performance
-                    //fs.unlinkSync(`./temp${test_case_id}${executableExtension}`);
-                    //console.log(`Compiled executable ./temp${test_case_id}${executableExtension} deleted.`);
+                    fs.unlinkSync(`./temp${test_case_id}${executableExtension}`);
+                    console.log(`Compiled executable ./temp${test_case_id}${executableExtension} deleted.`);
                 }catch (cleanupError) {
                     console.error(`Error during cleanup: ${cleanupError}`);
                 }
-                
+                */                
             });
             resolve();
         } catch (error) {

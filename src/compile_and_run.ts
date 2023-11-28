@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as child_process from 'child_process';
 import { promisify } from 'util';
 import { ExerciseTest } from './converter';
-import { ExecException } from 'child_process';
 
 // Enum representing supported programming languages
 enum Language {
@@ -16,11 +15,6 @@ interface TestResponse {
     test_case_id: string
     reason: string
     responseCode: string
-}
-
-interface TestError extends Error {
-    message: string
-    errorCode: string
 }
 
 const exec = promisify(child_process.exec);
@@ -39,10 +33,11 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
     return new Promise(async (resolve, reject) => {
         let compileCommand: string;
         let runCommand: string;
-        let executableExtension: string;
+
         // Create temporary file path
         const tempFilePath = `src/${exerciseTest.studentID}/temp${test_case_id}.${exerciseTest.language}`
         const executableFilePath = `src/${exerciseTest.studentID}/temp${test_case_id}`
+
 
         switch (exerciseTest.language) {
             case Language.TypeScript:
@@ -50,17 +45,16 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
                 runCommand = 'node';
                 break;
             case Language.JavaScript:
-                compileCommand = ''; // No compilation needed for JavaScript
+                compileCommand = '';
                 runCommand = 'node';
                 break;
             case Language.Python:
-                compileCommand = ''; // No compilation needed for Python
+                compileCommand = '';
                 runCommand = 'python';
                 break;
             case Language.C:
                 compileCommand = `gcc -o ${executableFilePath} ${tempFilePath} -lcunit`;
                 runCommand = `./${executableFilePath}`;
-                //executableExtension = '.exe';
                 break;
             default:
                 console.error(`Unsupported language: ${exerciseTest.language}`);
@@ -127,4 +121,4 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
     });
 }
 
-export {compileAndRun, readFromFile, Language, TestResponse, TestError};
+export {compileAndRun, readFromFile, Language, TestResponse};

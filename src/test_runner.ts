@@ -1,12 +1,7 @@
 import * as fs from "fs";
 import {testRunnerRunner, ExerciseTest} from "./converter";
-import {compileAndRun} from "./compile_and_run";
+import {compileAndRun, TestResponse, TestError} from "./compile_and_run";
 import { rejects } from "assert";
-
-interface FailReason {
-    test_case_id: string
-    reason: string
-}
 
 // receive API call (with JSON object)
 // TODO: Replace exerciseTest example with real data (some sort of handling)
@@ -33,7 +28,7 @@ void testAddTwoNumbers(void) {
 int main(void) {
     // Initialize the CUnit test registry
     if (CUE_SUCCESS != CU_initialize_registry()) {
-        return CU_get_error();
+        return CU_get_error()
     }
 
     // Add a suite to the registry
@@ -137,14 +132,21 @@ async function deleteDirectory(directoryPath: string): Promise<void> {
 
 // Compile and run tests
 async function runAllTests() {
+    let testResults: TestResponse[] = [];
     try {
         for (const testCase of parsedExerciseTest.testCases) {
-            const result = await compileAndRun(parsedExerciseTest, testCase.code, testCase.testCaseId)
+            testResults.push((
+                await compileAndRun(parsedExerciseTest, testCase.code, testCase.testCaseId)));
+            
+            if (testResults[testResults.length - 1].responseCode == ("16" || "69")) {
+                throw new Error("Test failed");
+            }
         }
     } catch (error) {
         console.error("OUTER ERROR HAS BEEN FOUND: "+ error);
     } finally {
-        deleteDirectory(`src/${parsedExerciseTest.studentID}`);
+        await deleteDirectory(`src/${parsedExerciseTest.studentID}`);
+        console.log(testResults);
     }
 }
 

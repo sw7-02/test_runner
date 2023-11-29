@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import {testRunnerRunner, ExerciseTest} from "./converter";
-import {compileAndRun, TestResponse, TestError} from "./compile_and_run";
-import { rejects } from "assert";
+import {compileAndRun, TestResponse} from "./compile_and_run";
 
 // receive API call (with JSON object)
 // TODO: Replace exerciseTest example with real data (some sort of handling)

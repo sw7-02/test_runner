@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 
 app.post("/", async (req, res) => {
     console.log(req.body);
-    const exerciseTest = req.body as ExerciseTest
+    const exerciseTest = await req.body as ExerciseTest
     if(!exerciseTest)
         return res.status(400).send("All necessary parameters were not provided");
     else if (exerciseTest.code = "")

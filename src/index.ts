@@ -4,8 +4,8 @@ import * as bodyParser from "body-parser";
 import helmet from "helmet";
 //import cors from "cors";
 import cors = require("cors");
-import { ExerciseTest } from "./converter";
-import { runCode} from "./test_runner"
+import { ExerciseTest } from "./lib";
+import { runCode } from "./test_runner"
 const app = express();
 
 // Call middlewares
@@ -147,7 +147,6 @@ app.post("/", async (req, res) => {
     //res.send(testResults)
     res.send("Hello World!");
 })
-
 
 
 app.listen(3000, () => {

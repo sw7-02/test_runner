@@ -1,6 +1,7 @@
 import * as fs from "fs";
-import {testRunnerRunner, ExerciseTest} from "./converter";
-import {compileAndRun, TestResponse} from "./compile_and_run";
+import { testRunnerRunner } from "./converter";
+import { ExerciseTest, TestResponse } from "./lib";
+import { compileAndRun } from "./compile_and_run";
 
 // receive API call (with JSON object)
 // TODO: Replace exerciseTest example with real data (some sort of handling)
@@ -124,19 +125,9 @@ async function runCode (parsedExerciseTest: ExerciseTest): Promise<TestResponse[
     return await runAllTests();
 }
 
-async function deleteDirectory(directoryPath: string): Promise<void> {
-    try {
-        await fs.promises.rm(directoryPath, { recursive: true });
-        console.log(`Directory ${directoryPath} deleted successfully.`);
-    } catch (error) {
-        console.error(`Error deleting directory ${directoryPath}: ${error}`);
-    }
-}
-
-
 // Compile and run tests
 async function runAllTests() : Promise<TestResponse[]> {
-    let testResults: TestResponse[] = [];
+    const testResults: TestResponse[] = [];
     try {
         for (const testCase of parsedExerciseTest.testCases) {
             testResults.push((
@@ -147,12 +138,22 @@ async function runAllTests() : Promise<TestResponse[]> {
             }
         }
     } catch (error) {
-        console.error("OUTER ERROR HAS BEEN FOUND: "+ error);
+        console.error("OUTER ERROR HAS BEEN FOUND: " + error);
     } finally {
-        await deleteDirectory(`src/${parsedExerciseTest.studentID}`);
+        deleteDirectory(`src/${parsedExerciseTest.studentID}`);
         //console.log(testResults);
         return testResults;
     }
+}
+
+function deleteDirectory(directoryPath: string): void{
+    fs.rm(directoryPath, { recursive:true }, (err) => { 
+        if(err){ 
+            console.error(`Error deleting directory ${directoryPath}:` + err.message); 
+            return;
+        } 
+        console.log(`Directory ${directoryPath} deleted successfully.`); 
+    });
 }
 
 

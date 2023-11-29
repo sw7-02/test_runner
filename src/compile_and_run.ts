@@ -4,11 +4,6 @@ import { promisify } from 'util';
 import { ExerciseTest } from './lib';
 import { Language, TestResponse, COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE } from './lib';
 
-interface TestError extends Error {
-    reason: string
-    errorCode: string
-}
-
 const exec = promisify(child_process.exec);
 const execFile = promisify(child_process.execFile);
 

@@ -115,22 +115,16 @@ int main(void) {
 
 // Convert JSON to ExerciseTest instance
 const exerciseTestJSON = JSON.stringify(exerciseTest, null, 2);
-
 // Parse JSON and cast to interfaces
 const parsedExerciseTest: ExerciseTest = JSON.parse(exerciseTestJSON);
-
-async function runCode (parsedExerciseTest: ExerciseTest): Promise<TestResponse[]> {
-    testRunnerRunner(parsedExerciseTest);  
-
-    // Call the async function
-    return await runAllTests();
-}
+// convert parsedExerciseTest to directories and files
+testRunnerRunner(parsedExerciseTest);
 
 // Call the async function
 runAllTests();
 
 // Compile and run tests
-async function runAllTests(): Promise<TestResponse[]> {
+async function runAllTests(): Promise<void> {
     const testResults: TestResponse[] = [];
     try {
         for (const testCase of parsedExerciseTest.testCases) {
@@ -143,10 +137,8 @@ async function runAllTests(): Promise<TestResponse[]> {
     } catch (error) {
         console.error("OUTER ERROR HAS BEEN FOUND: " + error);
     } finally {
-
-        await deleteDirectory(`src/${parsedExerciseTest.studentID}`);
-        //console.log(testResults);
-        return testResults;
+        deleteDirectory(`src/${parsedExerciseTest.studentID}`);
+        console.log(testResults);
     }
 }
 
@@ -159,12 +151,3 @@ function deleteDirectory(directoryPath: string): void{
         console.log(`Directory ${directoryPath} deleted successfully.`); 
     });
 }
-
-//let testResults = runCode(parsedExerciseTest);
-//console.log(`Here: ${testResults}`)
-runCode(parsedExerciseTest)
-    .then(testResults => {
-        console.log(`Here: ${JSON.stringify(testResults)}`);
-    })
-
-export {runCode};

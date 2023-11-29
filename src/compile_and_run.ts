@@ -1,20 +1,35 @@
 import * as fs from 'fs';
 import * as child_process from 'child_process';
 import { promisify } from 'util';
-import { ExerciseTest } from './lib';
-import { Language, TestResponse, COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE } from './lib';
+import { ExerciseTest, COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE } from './lib';
+
+// Enum representing supported programming languages
+enum Language {
+    TypeScript = 'typescript',
+    JavaScript = 'javascript',
+    Python = 'py',
+    C = 'c',
+}
+
+interface TestResponse {
+    test_case_id: string
+    reason: string
+    responseCode: string
+}
 
 const exec = promisify(child_process.exec);
 const execFile = promisify(child_process.execFile);
 
+function readFromFile(filePath: string): string {
+    try {
+        return fs.readFileSync(filePath, 'utf-8');
+    } catch (error) {
+        process.exit(1);
+    }
+}
+
 // Function to compile and run code based on the detected language
 async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_case_id: string): Promise<TestResponse> {
-    let response: TestResponse = {
-        test_case_id: test_case_id,
-        reason: "",
-        responseCode: ""
-    }
-
     return new Promise(async (resolve, reject) => {
         let compileCommand: string;
         let runCommand: string;
@@ -22,6 +37,7 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
         // Create temporary file path
         const tempFilePath = `src/${exerciseTest.studentID}/temp${test_case_id}.${exerciseTest.language}`
         const executableFilePath = `src/${exerciseTest.studentID}/temp${test_case_id}`
+
 
         switch (exerciseTest.language) {
             case Language.TypeScript:
@@ -46,24 +62,41 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
                 return process.exit(1);
         }
 
-        fs.writeFileSync(tempFilePath, testCode, 'utf-8'); 
-        
+        fs.writeFileSync(tempFilePath, testCode, 'utf-8');   
+        let response: TestResponse = {
+            test_case_id: "",
+            reason: "",
+            responseCode: ""
+        }
         // Compile the code
         await exec(compileCommand).then(
-            async () => {
+            async (res) => {
                 // Execute the compiled code
                 await execFile(runCommand).then((res) => {
                     var result = res.stdout.substring(res.stdout.indexOf("Test"));
-                    response.reason = result;
-
                     //TODO: better logic for identifieng failure and passes
-                    if (result.includes("Test failed"))
-                        response.responseCode = `${TEST_FAILED_CODE}`;
-                    else if (result.includes("Test passed"))
-                        response.responseCode = `${TEST_PASSED_CODE}`;
-                    else
-                        response.responseCode = "Unknown";
-                    
+                    if (result.includes("Test failed")) {
+                        response = {
+                            test_case_id: test_case_id,
+                            reason: result,
+                            responseCode: `${TEST_FAILED_CODE}`
+                        }
+                    }
+                    else if (result.includes("Test passed")) {
+                        
+                        response = {
+                            test_case_id: test_case_id,
+                            reason: result,
+                            responseCode: `${TEST_PASSED_CODE}`
+                        }
+                    }
+                    else {
+                        response = {
+                            test_case_id: test_case_id,
+                            reason: result,
+                            responseCode: "Unknown"
+                        }
+                    }
                     console.log(result)
                     resolve(response);
                 }, (reason) => {
@@ -82,4 +115,4 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
     });
 }
 
-export {compileAndRun, Language, TestResponse};
+export {compileAndRun};

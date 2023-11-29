@@ -1,8 +1,6 @@
 import * as fs from "fs";
-import { testRunnerRunner } from "./converter";
-import { ExerciseTest } from "./lib";
-import { compileAndRun, TestResponse } from "./compile_and_run";
-
+import {testRunnerRunner, ExerciseTest} from "./converter";
+import {compileAndRun, TestResponse} from "./compile_and_run";
 
 // receive API call (with JSON object)
 // TODO: Replace exerciseTest example with real data (some sort of handling)
@@ -11,7 +9,7 @@ const exerciseTest = {
     "code": `int addTwoNumbers(int number1, int number2) {
     int sum;
     sum = number1 + number2;
-    return sum
+    return sum;
 }
     `,
     "studentID": "67890",
@@ -120,25 +118,31 @@ const parsedExerciseTest: ExerciseTest = JSON.parse(exerciseTestJSON);
 // convert parsedExerciseTest to directories and files
 testRunnerRunner(parsedExerciseTest);
 
-// Call the async function
-runAllTests();
+async function runCode (parsedExerciseTest: ExerciseTest): Promise<TestResponse[]> {
+    testRunnerRunner(parsedExerciseTest);  
+
+    // Call the async function
+    return await runAllTests();
+}
 
 // Compile and run tests
-async function runAllTests(): Promise<void> {
+async function runAllTests(): Promise<TestResponse[]> {
     const testResults: TestResponse[] = [];
     try {
         for (const testCase of parsedExerciseTest.testCases) {
-            const result = await compileAndRun(parsedExerciseTest, testCase.code, testCase.testCaseId);
-            testResults.push(result);
-
-            if (result.responseCode === "16" || result.responseCode === "69")
-                throw new Error(result.responseCode === "16" ? "Compilation error" : "Execution error");
+            testResults.push((
+                await compileAndRun(parsedExerciseTest, testCase.code, testCase.testCaseId)));
+            
+            if (testResults[testResults.length - 1].responseCode == ("16" || "69")) {
+                throw new Error("Test failed");
+            }
         }
     } catch (error) {
-        console.error("OUTER ERROR HAS BEEN FOUND: " + error);
+        console.error("OUTER ERROR HAS BEEN FOUND: "+ error);
     } finally {
         deleteDirectory(`src/${parsedExerciseTest.studentID}`);
         console.log(testResults);
+        return testResults;
     }
 }
 
@@ -151,3 +155,12 @@ function deleteDirectory(directoryPath: string): void{
         console.log(`Directory ${directoryPath} deleted successfully.`); 
     });
 }
+
+//let testResults = runCode(parsedExerciseTest);
+//console.log(`Here: ${testResults}`)
+runCode(parsedExerciseTest)
+    .then(testResults => {
+        console.log(`Here: ${JSON.stringify(testResults)}`);
+    })
+
+export {runCode};

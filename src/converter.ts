@@ -1,38 +1,46 @@
-import { appendFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
-import { ExerciseTest } from './lib';
+import { appendFile, appendFileSync, readFile, readFileSync } from "node:fs";
+import * as fs from "fs";
 
-
-// Creates a directory for all resources.
-function testRunnerRunner (exerciseTest: ExerciseTest) {
-    const { studentID, language, code, testCases } = exerciseTest;
-    createDirectory(studentID);
-    createDirectory(`${studentID}/tests`);
-    createFiles(`src/${studentID}/exerciseFile.${language}`, code);
-
-    testCases.forEach(testCase => {
-        createFiles(`src/${studentID}/tests/testFile${testCase.testCaseId}.${language}`, testCase.code, 
-            `#include "exerciseFile.${language}"`);
-        testCase.code = readFileSync(`src/${studentID}/tests/testFile${testCase.testCaseId}.${language}`, "utf-8");
-    });    
+interface  ExerciseTest {
+    language: string;
+    code: string;
+    studentID: string;
+    testCases: TestCase[];
 }
 
-// Creates a directory if it does not already exist
+interface TestCase {
+    testCaseId: string;
+    code: string;
+}
+
 function createDirectory(directory: string): void {
-    const path = `src/${directory}`;
-    if (!existsSync(path)) {
-        mkdirSync(path);
-        console.log(`Directory ${path} created!`);
+    if (!fs.existsSync(`src/${directory}`)) {
+        fs.mkdirSync(`src/${directory}`);
+        console.log(`Directory src/${directory} created!`);
     }
-    else
-        console.log(`Directory ${path} already exists!`);
+    else {
+        console.log(`Directory src/${directory} already exists!`);
+    }
 }
 
-// Creates files, with content and optionally an include if supplied
-function createFiles (directoryPath: string, content: string, include?: string): void {
-    if(include) 
+const createFiles = (directoryPath: string, content: string, include?: string): void => {
+    if(include)
         appendFileSync(directoryPath, `${include}\n`, "utf8");
 
     appendFileSync(directoryPath, `${content}\n`, "utf8");
 }
 
-export {testRunnerRunner};
+function testRunnerRunner (exerciseTest: ExerciseTest) {
+    createDirectory(exerciseTest.studentID);
+    createDirectory(`${exerciseTest.studentID}/tests`);
+    createFiles(`src/${exerciseTest.studentID}/exerciseFile.${exerciseTest.language}`, `${exerciseTest.code}`);
+
+    exerciseTest.testCases.forEach(testCase => {
+        createFiles(`src/${exerciseTest.studentID}/tests/testFile${testCase.testCaseId}.${exerciseTest.language}`, `${testCase.code}`, 
+            `#include "exerciseFile.${exerciseTest.language}"`);
+        testCase.code = readFileSync(`src/${exerciseTest.studentID}/tests/testFile${testCase.testCaseId}.${exerciseTest.language}`, "utf-8");
+    });    
+
+}
+
+export {testRunnerRunner, ExerciseTest, TestCase};

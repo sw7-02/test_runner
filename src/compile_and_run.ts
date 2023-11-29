@@ -19,7 +19,7 @@ interface TestResponse {
 }
 
 interface TestError extends Error {
-    message: string
+    reason: string
     errorCode: string
 }
 

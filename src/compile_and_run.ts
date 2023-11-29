@@ -68,22 +68,12 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
                     resolve(response);
                 }, (reason) => {
                         console.log(`\nExecution stderr: ${reason.stderr}\n`);
-                        /*response = {
-                            test_case_id: test_case_id,
-                            reason: reason.stderr,
-                            responseCode: "69",
-                        }*/
                         resolve({test_case_id: test_case_id,
                                  reason: reason.stderr,
                                  responseCode: `${EXECUTION_ERROR_CODE}`});
                 });
             }, (reason) => {
                     console.error(`Compilation error: ${reason.stderr}`);
-                    /*response = {
-                        test_case_id: test_case_id,
-                        reason: reason.stderr,
-                        responseCode: "16",
-                    }*/
                     resolve({ test_case_id: test_case_id,
                         reason: reason.stderr,
                         responseCode: `${COMPILATION_ERROR_CODE}`});

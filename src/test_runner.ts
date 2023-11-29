@@ -1,6 +1,8 @@
 import * as fs from "fs";
-import {testRunnerRunner, ExerciseTest} from "./converter";
-import {compileAndRun, TestResponse} from "./compile_and_run";
+import { testRunnerRunner } from "./converter";
+import { ExerciseTest } from "./lib";
+import { compileAndRun, TestResponse } from "./compile_and_run";
+
 
 // receive API call (with JSON object)
 // TODO: Replace exerciseTest example with real data (some sort of handling)
@@ -9,7 +11,7 @@ const exerciseTest = {
     "code": `int addTwoNumbers(int number1, int number2) {
     int sum;
     sum = number1 + number2;
-    return sum;
+    return sum
 }
     `,
     "studentID": "67890",
@@ -124,37 +126,39 @@ async function runCode (parsedExerciseTest: ExerciseTest): Promise<TestResponse[
     return await runAllTests();
 }
 
-async function deleteDirectory(directoryPath: string): Promise<void> {
-    try {
-        await fs.promises.rm(directoryPath, { recursive: true });
-        console.log(`Directory ${directoryPath} deleted successfully.`);
-    } catch (error) {
-        console.error(`Error deleting directory ${directoryPath}: ${error}`);
-    }
-}
-
+// Call the async function
+runAllTests();
 
 // Compile and run tests
-async function runAllTests() : Promise<TestResponse[]> {
-    let testResults: TestResponse[] = [];
+async function runAllTests(): Promise<TestResponse[]> {
+    const testResults: TestResponse[] = [];
     try {
         for (const testCase of parsedExerciseTest.testCases) {
-            testResults.push((
-                await compileAndRun(parsedExerciseTest, testCase.code, testCase.testCaseId)));
-            
-            if (testResults[testResults.length - 1].responseCode == ("16" || "69")) {
-                throw new Error("Test failed");
-            }
+            const result = await compileAndRun(parsedExerciseTest, testCase.code, testCase.testCaseId);
+            testResults.push(result);
+
+            if (result.responseCode === "16" || result.responseCode === "69")
+                throw new Error(result.responseCode === "16" ? "Compilation error" : "Execution error");
         }
     } catch (error) {
-        console.error("OUTER ERROR HAS BEEN FOUND: "+ error);
+        console.error("OUTER ERROR HAS BEEN FOUND: " + error);
     } finally {
+
         await deleteDirectory(`src/${parsedExerciseTest.studentID}`);
         //console.log(testResults);
         return testResults;
     }
 }
 
+function deleteDirectory(directoryPath: string): void{
+    fs.rm(directoryPath, { recursive:true }, (err) => { 
+        if(err){ 
+            console.error(`Error deleting directory ${directoryPath}:` + err.message); 
+            return;
+        } 
+        console.log(`Directory ${directoryPath} deleted successfully.`); 
+    });
+}
 
 //let testResults = runCode(parsedExerciseTest);
 //console.log(`Here: ${testResults}`)

@@ -2,10 +2,10 @@
 import express = require("express");
 import * as bodyParser from "body-parser";
 import helmet from "helmet";
+import { ExerciseTest } from "./lib";
 //import cors from "cors";
 import cors = require("cors");
-import { ExerciseTest } from "./converter";
-import { runCode} from "./test_runner"
+import { runCode } from "./test_runner"
 const app = express();
 
 // Call middlewares
@@ -146,9 +146,7 @@ app.post("/", async (req, res) => {
     })
     //res.send(testResults)
     res.send("Hello World!");
-})
-
-
+});
 
 app.listen(3000, () => {
     console.log("Server started on port 3000!");

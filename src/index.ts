@@ -2,7 +2,7 @@ import express from "express";
 import * as bodyParser from "body-parser";
 import helmet from "helmet";
 import cors from "cors";
-import { ExerciseTest } from "./converter";
+import { ExerciseTest } from "./lib";
 
 const app = express();
 
@@ -19,9 +19,7 @@ app.post("/", async (req, res) => {
     }
     
     res.send("Hello World!");
-})
-
-
+});
 
 app.listen(3000, () => {
     console.log("Server started on port 3000!");

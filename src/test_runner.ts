@@ -150,6 +150,16 @@ async function runAllTests(): Promise<TestResponse[]> {
     }
 }
 
+function deleteDirectory(directoryPath: string): void{
+    fs.rm(directoryPath, { recursive:true }, (err) => { 
+        if(err){ 
+            console.error(`Error deleting directory ${directoryPath}:` + err.message); 
+            return;
+        } 
+        console.log(`Directory ${directoryPath} deleted successfully.`); 
+    });
+}
+
 //let testResults = runCode(parsedExerciseTest);
 //console.log(`Here: ${testResults}`)
 runCode(parsedExerciseTest)

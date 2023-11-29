@@ -1,4 +1,4 @@
-import fs from "fs";
+import * as fs from "fs";
 
 const COMPILATION_ERROR_CODE = 16;
 const EXECUTION_ERROR_CODE = 69;

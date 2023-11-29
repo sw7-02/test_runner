@@ -29,7 +29,7 @@ app.post("/", async (req, res) => {
         return res.status(400).send("No tests provided");
     
     const testResults = await runCode(exerciseTest);
-    res.send(testResults);
+    return res.send(testResults);
 })
 
 

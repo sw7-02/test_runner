@@ -115,16 +115,22 @@ int main(void) {
 
 // Convert JSON to ExerciseTest instance
 const exerciseTestJSON = JSON.stringify(exerciseTest, null, 2);
+
 // Parse JSON and cast to interfaces
 const parsedExerciseTest: ExerciseTest = JSON.parse(exerciseTestJSON);
-// convert parsedExerciseTest to directories and files
-testRunnerRunner(parsedExerciseTest);
+
+async function runCode (parsedExerciseTest: ExerciseTest): Promise<TestResponse[]> {
+    testRunnerRunner(parsedExerciseTest);  
+
+    // Call the async function
+    return await runAllTests();
+}
 
 // Call the async function
 runAllTests();
 
 // Compile and run tests
-async function runAllTests(): Promise<void> {
+async function runAllTests(): Promise<TestResponse[]> {
     const testResults: TestResponse[] = [];
     try {
         for (const testCase of parsedExerciseTest.testCases) {
@@ -137,17 +143,18 @@ async function runAllTests(): Promise<void> {
     } catch (error) {
         console.error("OUTER ERROR HAS BEEN FOUND: " + error);
     } finally {
-        deleteDirectory(`src/${parsedExerciseTest.studentID}`);
-        console.log(testResults);
+
+        await deleteDirectory(`src/${parsedExerciseTest.studentID}`);
+        //console.log(testResults);
+        return testResults;
     }
 }
 
-function deleteDirectory(directoryPath: string): void{
-    fs.rm(directoryPath, { recursive:true }, (err) => { 
-        if(err){ 
-            console.error(`Error deleting directory ${directoryPath}:` + err.message); 
-            return;
-        } 
-        console.log(`Directory ${directoryPath} deleted successfully.`); 
-    });
-}
+//let testResults = runCode(parsedExerciseTest);
+//console.log(`Here: ${testResults}`)
+runCode(parsedExerciseTest)
+    .then(testResults => {
+        console.log(`Here: ${JSON.stringify(testResults)}`);
+    })
+
+export {runCode};

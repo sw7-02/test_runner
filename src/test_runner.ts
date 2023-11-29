@@ -1,6 +1,7 @@
 import * as fs from "fs";
-import {testRunnerRunner, ExerciseTest} from "./converter";
-import {compileAndRun, TestResponse} from "./compile_and_run";
+import {testRunnerRunner} from "./converter";
+import {compileAndRun} from "./compile_and_run";
+import { TestResponse, ExerciseTest } from "./lib";
 
 // receive API call (with JSON object)
 // TODO: Replace exerciseTest example with real data (some sort of handling)
@@ -115,10 +116,10 @@ int main(void) {
 const exerciseTestJSON = JSON.stringify(exerciseTest, null, 2);
 // Parse JSON and cast to interfaces
 const parsedExerciseTest: ExerciseTest = JSON.parse(exerciseTestJSON);
-// convert parsedExerciseTest to directories and files
-testRunnerRunner(parsedExerciseTest);
+
 
 async function runCode (parsedExerciseTest: ExerciseTest): Promise<TestResponse[]> {
+    // convert parsedExerciseTest to directories and files
     testRunnerRunner(parsedExerciseTest);  
 
     // Call the async function

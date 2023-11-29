@@ -118,42 +118,43 @@ const exerciseTestJSON = JSON.stringify(exerciseTest, null, 2);
 const parsedExerciseTest: ExerciseTest = JSON.parse(exerciseTestJSON);
 
 async function runCode (parsedExerciseTest: ExerciseTest): Promise<TestResponse[]> {
-    testRunnerRunner(parsedExerciseTest);
-
-    async function deleteDirectory(directoryPath: string): Promise<void> {
-        try {
-            await fs.promises.rm(directoryPath, { recursive: true });
-            console.log(`Directory ${directoryPath} deleted successfully.`);
-        } catch (error) {
-            console.error(`Error deleting directory ${directoryPath}: ${error}`);
-        }
-    }
-
-
-    // Compile and run tests
-    async function runAllTests() : Promise<TestResponse[]> {
-        let testResults: TestResponse[] = [];
-        try {
-            for (const testCase of parsedExerciseTest.testCases) {
-                testResults.push((
-                    await compileAndRun(parsedExerciseTest, testCase.code, testCase.testCaseId)));
-                
-                if (testResults[testResults.length - 1].responseCode == ("16" || "69")) {
-                    throw new Error("Test failed");
-                }
-            }
-        } catch (error) {
-            console.error("OUTER ERROR HAS BEEN FOUND: "+ error);
-        } finally {
-            await deleteDirectory(`src/${parsedExerciseTest.studentID}`);
-            //console.log(testResults);
-            return testResults;
-        }
-    }
+    testRunnerRunner(parsedExerciseTest);  
 
     // Call the async function
     return await runAllTests();
 }
+
+async function deleteDirectory(directoryPath: string): Promise<void> {
+    try {
+        await fs.promises.rm(directoryPath, { recursive: true });
+        console.log(`Directory ${directoryPath} deleted successfully.`);
+    } catch (error) {
+        console.error(`Error deleting directory ${directoryPath}: ${error}`);
+    }
+}
+
+
+// Compile and run tests
+async function runAllTests() : Promise<TestResponse[]> {
+    let testResults: TestResponse[] = [];
+    try {
+        for (const testCase of parsedExerciseTest.testCases) {
+            testResults.push((
+                await compileAndRun(parsedExerciseTest, testCase.code, testCase.testCaseId)));
+            
+            if (testResults[testResults.length - 1].responseCode == ("16" || "69")) {
+                throw new Error("Test failed");
+            }
+        }
+    } catch (error) {
+        console.error("OUTER ERROR HAS BEEN FOUND: "+ error);
+    } finally {
+        await deleteDirectory(`src/${parsedExerciseTest.studentID}`);
+        //console.log(testResults);
+        return testResults;
+    }
+}
+
 
 //let testResults = runCode(parsedExerciseTest);
 //console.log(`Here: ${testResults}`)

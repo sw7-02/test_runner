@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as child_process from 'child_process';
 import { promisify } from 'util';
-import { ExerciseTest } from './converter';
+import { ExerciseTest, COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE } from './lib';
 
 // Enum representing supported programming languages
 enum Language {
@@ -15,11 +15,6 @@ interface TestResponse {
     test_case_id: string
     reason: string
     responseCode: string
-}
-
-interface TestError extends Error {
-    reason: string
-    errorCode: string
 }
 
 const exec = promisify(child_process.exec);
@@ -84,7 +79,7 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
                         response = {
                             test_case_id: test_case_id,
                             reason: result,
-                            responseCode: "1"
+                            responseCode: `${TEST_FAILED_CODE}`
                         }
                     }
                     else if (result.includes("Test passed")) {
@@ -92,7 +87,7 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
                         response = {
                             test_case_id: test_case_id,
                             reason: result,
-                            responseCode: "0"
+                            responseCode: `${TEST_PASSED_CODE}`
                         }
                     }
                     else {
@@ -106,24 +101,18 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
                     resolve(response);
                 }, (reason) => {
                         console.log(`\nExecution stderr: ${reason.stderr}\n`);
-                        const respsonseError: TestResponse = {
-                            test_case_id: test_case_id,
-                            reason: reason.stderr,
-                            responseCode: "69",
-                        }
-                        resolve(respsonseError);
+                        resolve({test_case_id: test_case_id,
+                                 reason: reason.stderr,
+                                 responseCode: `${EXECUTION_ERROR_CODE}`});
                 });
             }, (reason) => {
                     console.error(`Compilation error: ${reason.stderr}`);
-                    const respsonseError: TestResponse = {
-                        test_case_id: test_case_id,
+                    resolve({ test_case_id: test_case_id,
                         reason: reason.stderr,
-                        responseCode: "16",
-                    }
-                    resolve(respsonseError);
+                        responseCode: `${COMPILATION_ERROR_CODE}`});
             }
         );
     });
 }
 
-export {compileAndRun, readFromFile, Language, TestResponse};
+export {compileAndRun};

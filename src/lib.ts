@@ -1,4 +1,5 @@
 import fs from "fs";
+//import * as fs from "fs";//Lukas skal køre det sådan her
 
 const COMPILATION_ERROR_CODE = 16;
 const EXECUTION_ERROR_CODE = 69;

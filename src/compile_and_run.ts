@@ -69,7 +69,7 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
                         response.responseCode = `${TEST_PASSED_CODE}`;
                     else
                         response.responseCode = "Unknown";
-                    
+            
                     console.log(result)
                     resolve(response);
                 }, (reason) => {

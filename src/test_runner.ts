@@ -114,11 +114,12 @@ int main(void) {
 
 // Convert JSON to ExerciseTest instance
 const exerciseTestJSON = JSON.stringify(exerciseTest, null, 2);
-
 // Parse JSON and cast to interfaces
 const parsedExerciseTest: ExerciseTest = JSON.parse(exerciseTestJSON);
 
+
 async function runCode (parsedExerciseTest: ExerciseTest): Promise<TestResponse[]> {
+    // convert parsedExerciseTest to directories and files
     testRunnerRunner(parsedExerciseTest);  
 
     // Call the async function
@@ -155,7 +156,6 @@ function deleteDirectory(directoryPath: string): void{
         console.log(`Directory ${directoryPath} deleted successfully.`); 
     });
 }
-
 
 //let testResults = runCode(parsedExerciseTest);
 //console.log(`Here: ${testResults}`)

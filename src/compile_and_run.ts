@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as child_process from 'child_process';
 import { promisify } from 'util';
-import { ExerciseTest, Language, TestResponse, COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE, TIMEDOUT_CODE } from './lib';
+import { ExerciseTest, Language, TestResponse, COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, UNSUPPORTED_LANGUGAGE, TEST_PASSED_CODE, TEST_FAILED_CODE, TIMEDOUT_CODE } from './lib';
 import { TIMEOUT } from 'dns';
 import { stderr } from 'process';
 
@@ -27,26 +27,17 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
         const executableFilePath = `src/${exerciseTest.studentID}/temp${test_case_id}`
 
         switch (exerciseTest.language) {
-            case Language.TypeScript:
-                compileCommand = 'tsc';
-                runCommand = 'node';
-                break;
-            case Language.JavaScript:
-                compileCommand = '';
-                runCommand = 'node';
-                break;
-            case Language.Python:
-                compileCommand = '';
-                runCommand = 'python';
-                break;
             case Language.C:
                 compileCommand = `gcc -o ${executableFilePath} ${tempFilePath} -lcunit`;
                 runCommand = `./${executableFilePath}`;
                 break;
             default:
                 console.error(`Unsupported language: ${exerciseTest.language}`);
-                reject(`Unsupported Language: ${exerciseTest.language}`);
-                return process.exit(1);
+                return resolve({
+                    test_case_id: test_case_id,
+                    reason: "Unsupported langugage",
+                    responseCode: `${UNSUPPORTED_LANGUGAGE}`
+                });
         }
 
         fs.writeFileSync(tempFilePath, testCode, 'utf-8');   
@@ -81,7 +72,7 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
                 console.log("\n\nreason.code = "+ reason + "\n\n");
                 if(reason.stderr == ""){
                     return resolve({test_case_id: test_case_id,
-                        reason: "timed out",
+                        reason: "Timed out",
                         responseCode: `${TIMEDOUT_CODE}`});
                 } else {
                     console.log(`\nExecution stderr: ${reason.stderr}\n`);

@@ -1,6 +1,6 @@
 import {compileAndRun} from "../src/compile_and_run";
 import { expect } from 'chai';
-import { ExerciseTest, Language, TestResponse, COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE } from '../src/lib';
+import { ExerciseTest, Language, TestResponse, COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE, UNSUPPORTED_LANGUGAGE } from '../src/lib';
 import { testRunnerRunner } from "../src/converter";
 import path from "path";
 import * as fs from "fs";
@@ -253,5 +253,31 @@ describe('compileAndRun', () => {
         
     });
 */
+
+    it('should handle not supported languages', async () => {
+        const exerciseTest: ExerciseTest = {
+            studentID: 'testStudent',
+            language: Language.Python,
+            code: 
+            `int addTwoNumbers(int number1, int number2) {
+                int sum;
+                while(true){
+                    sum = number1 + number2;
+                }
+                return sum;
+            }
+                `,
+            testCases: [{ "testCaseId": "1", "code": testCodePassed}]
+        };
+
+        // creates all directories and files necessary to perform test
+        testRunnerRunner(exerciseTest); 
+
+        const response: TestResponse = 
+            await compileAndRun(exerciseTest, exerciseTest.testCases[0].code, exerciseTest.testCases[0].testCaseId);
+
+        expect(response.responseCode).to.equal(`${UNSUPPORTED_LANGUGAGE}`);
+        expect(response.reason).to.include(`Unsupported langugage`);
+    });
 
 });

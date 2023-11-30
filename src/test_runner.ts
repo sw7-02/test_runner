@@ -1,13 +1,13 @@
 import * as fs from "fs";
 import { testRunnerRunner } from "./converter";
-import { COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, ExerciseTest, TIMEDOUT_CODE, TestResponse } from "./lib";
+import { COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, ExerciseTest, TIMEDOUT_CODE, TestResponse, UNSUPPORTED_LANGUGAGE } from "./lib";
 import { compileAndRun } from "./compile_and_run";
 import { resolve } from "path";
 
 // receive API call (with JSON object)
 // TODO: Replace exerciseTest example with real data (some sort of handling)
 const exerciseTest = {
-    "language": "c",
+    "language": "py",
     "code": `int addTwoNumbers(int number1, int number2) {
     int sum;
     while(1) {
@@ -137,11 +137,12 @@ async function runAllTests() : Promise<TestResponse[]> {
                 await compileAndRun(parsedExerciseTest, testCase.code, testCase.testCaseId)));
             
             console.log(`\ntest result: ${testResults[testResults.length - 1].responseCode}\n`)
-            if (testResults[testResults.length - 1].responseCode == (`${COMPILATION_ERROR_CODE}` || `${EXECUTION_ERROR_CODE}`)) {
+            if (testResults[testResults.length - 1].responseCode == (`${COMPILATION_ERROR_CODE}` || `${EXECUTION_ERROR_CODE}`))
                 throw new Error("Test failed");
-            } else if (testResults[testResults.length - 1].responseCode == `${TIMEDOUT_CODE}`) {
+            else if (testResults[testResults.length - 1].responseCode == `${TIMEDOUT_CODE}`) 
                 throw new Error("Test timed out");
-            }
+            else if (testResults[testResults.length - 1].responseCode == `${UNSUPPORTED_LANGUGAGE}`)
+                throw new Error("Unsupported language");
         }
     } catch (error) {
         console.error("OUTER ERROR HAS BEEN FOUND: " + error);

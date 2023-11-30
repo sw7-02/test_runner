@@ -17,8 +17,6 @@ const exerciseTest: ExerciseTest = {
     ],
 };
 
-
-
 describe('testRunnerRunner tests', () => {
     afterEach(function () {
         const directoryPath = path.join(__dirname, '../src/testStudent');

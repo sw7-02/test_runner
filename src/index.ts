@@ -28,6 +28,8 @@ app.post("/", async (req, res) => {
     else if (exerciseTest.testCases.length = 0)
         return res.status(400).send("No tests provided");
     
+    // TODO: handle thrown errors
+
     const testResults = await runCode(exerciseTest);
     return res.send(testResults);
 })

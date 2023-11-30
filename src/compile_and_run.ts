@@ -1,18 +1,14 @@
 import * as fs from 'fs';
 import * as child_process from 'child_process';
 import { promisify } from 'util';
-import { ExerciseTest, Language, TestResponse, COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE } from './lib';
+import { ExerciseTest, Language, TestResponse, COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE, TIMEDOUT_CODE } from './lib';
+import { TIMEOUT } from 'dns';
+import { stderr } from 'process';
 
 const exec = promisify(child_process.exec);
 const execFile = promisify(child_process.execFile);
 
-function readFromFile(filePath: string): string {
-    try {
-        return fs.readFileSync(filePath, 'utf-8');
-    } catch (error) {
-        process.exit(1);
-    }
-}
+const TIMEOUT_DURATION = 3000; // 5 seconds in milliseconds
 
 // Function to compile and run code based on the detected language
 async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_case_id: string): Promise<TestResponse> {
@@ -56,35 +52,45 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
         fs.writeFileSync(tempFilePath, testCode, 'utf-8');   
         
         // Compile the code
-        await exec(compileCommand).then(
-            async () => {
-                // Execute the compiled code
-                await execFile(runCommand).then((res) => {
-                    var result = res.stdout.substring(res.stdout.indexOf("Test"));
-                    response.reason = result;
-                    //TODO: better logic for identifieng failure and passes
-                    if (result.includes("Test failed"))
-                        response.responseCode = `${TEST_FAILED_CODE}`;
-                    else if (result.includes("Test passed"))
-                        response.responseCode = `${TEST_PASSED_CODE}`;
-                    else
-                        response.responseCode = "Unknown";
-            
-                    console.log(result)
-                    resolve(response);
-                }, (reason) => {
-                        console.log(`\nExecution stderr: ${reason.stderr}\n`);
-                        resolve({test_case_id: test_case_id,
-                            reason: reason.stderr,
-                            responseCode: `${EXECUTION_ERROR_CODE}`});
-                });
+        await exec(compileCommand).catch((reason) => {
+            console.error(`Compilation error: ${reason.stderr}`);
+            resolve({
+                test_case_id: test_case_id,
+                reason: reason.stderr,
+                responseCode: `${COMPILATION_ERROR_CODE}`
+            });
+            return;
+        });
+
+        // Execute the compiled code
+        await execFile(runCommand, {timeout: TIMEOUT_DURATION})
+            .then((res) => {
+                var result = res.stdout.substring(res.stdout.indexOf("Test"));
+                response.reason = result;
+                //TODO: better logic for identifieng failure and passes
+                if (result.includes("Test failed"))
+                    response.responseCode = `${TEST_FAILED_CODE}`;
+                else if (result.includes("Test passed"))
+                    response.responseCode = `${TEST_PASSED_CODE}`;
+                else
+                    response.responseCode = "Unknown";
+        
+                console.log(result)
+                resolve(response);
             }, (reason) => {
-                    console.error(`Compilation error: ${reason.stderr}`);
-                    resolve({ test_case_id: test_case_id,
+                console.log("\n\nreason.code = "+ reason + "\n\n");
+                if(reason.stderr == ""){
+                    return resolve({test_case_id: test_case_id,
+                        reason: "timed out",
+                        responseCode: `${TIMEDOUT_CODE}`});
+                } else {
+                    console.log(`\nExecution stderr: ${reason.stderr}\n`);
+                    resolve({test_case_id: test_case_id,
                         reason: reason.stderr,
-                        responseCode: `${COMPILATION_ERROR_CODE}`});
-            }
-        );
+                        responseCode: `${EXECUTION_ERROR_CODE}`});
+                }
+                    
+            });
     });
 }
 

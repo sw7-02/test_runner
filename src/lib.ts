@@ -3,6 +3,7 @@ import fs from "fs";
 
 const COMPILATION_ERROR_CODE = 16;
 const EXECUTION_ERROR_CODE = 69;
+const TIMEDOUT_CODE = -1;
 const TEST_PASSED_CODE = 0;
 const TEST_FAILED_CODE = 1;
 
@@ -40,4 +41,4 @@ function readFromFile(filePath: string): string {
     }
 }
 
-export {Language, TestResponse, ExerciseTest, readFromFile, COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE}
+export {Language, TestResponse, ExerciseTest, readFromFile, COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE, TIMEDOUT_CODE}

@@ -5,24 +5,29 @@ import * as fs from "fs";
 // Creates a directory for all resources.
 function testRunnerRunner (exerciseTest: ExerciseTest) {
     const { studentID, language, code, testCases } = exerciseTest;
-    createDirectory(studentID);
-    createDirectory(`${studentID}/tests`);
-    createFiles(`src/${studentID}/exerciseFile.${language}`, code);
-    testCases.forEach(testCase => {
-        createFiles(`src/${studentID}/tests/testFile${testCase.testCaseId}.${language}`, testCase.code, 
-            `#include "exerciseFile.${language}"`);
-        testCase.code = readFileSync(`src/${studentID}/tests/testFile${testCase.testCaseId}.${language}`, "utf-8");
-    });    
+
+    try {
+        createDirectory(`src/${studentID}`);
+        createDirectory(`src/${studentID}/tests`);
+        createFiles(`src/${studentID}/exerciseFile.${language}`, code);
+        testCases.forEach(testCase => {
+            createFiles(`src/${studentID}/tests/testFile${testCase.testCaseId}.${language}`, testCase.code, 
+                `#include "exerciseFile.${language}"`);
+            testCase.code = readFileSync(`src/${studentID}/tests/testFile${testCase.testCaseId}.${language}`, "utf-8");
+        });  
+    } catch (error) {
+        console.error(error);
+    }
 }
 
-function createDirectory(directory: string): void {
-    const path = `src/${directory}`;
-    if (!existsSync(path)) {
-        mkdirSync(path);
-        console.log(`Directory ${path} created!`);
+function createDirectory(directoryPath: string): void {
+    if (!existsSync(directoryPath)) {
+        mkdirSync(directoryPath);
+        console.log(`Directory ${directoryPath} created!`);
     }
-    else
-        console.log(`Directory ${path} already exists!`);
+    else {
+        console.error(`Directory ${directoryPath} already exists!`);
+    }    
 }
 
 function createFiles (directoryPath: string, content: string, include?: string): void {
@@ -32,4 +37,4 @@ function createFiles (directoryPath: string, content: string, include?: string):
     appendFileSync(directoryPath, `${content}\n`, "utf8");
 }
 
-export {testRunnerRunner};
+export {testRunnerRunner, createDirectory, createFiles};

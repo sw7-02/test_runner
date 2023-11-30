@@ -1,7 +1,8 @@
 import * as fs from "fs";
 import { testRunnerRunner } from "./converter";
-import { ExerciseTest, TestResponse } from "./lib";
+import { COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, ExerciseTest, TIMEDOUT_CODE, TestResponse } from "./lib";
 import { compileAndRun } from "./compile_and_run";
+import { resolve } from "path";
 
 // receive API call (with JSON object)
 // TODO: Replace exerciseTest example with real data (some sort of handling)
@@ -9,7 +10,9 @@ const exerciseTest = {
     "language": "c",
     "code": `int addTwoNumbers(int number1, int number2) {
     int sum;
-    sum = number1 + number2;
+    while(1) {
+        sum = number1 + number2;
+    }
     return sum;
 }
     `,
@@ -117,7 +120,6 @@ const exerciseTestJSON = JSON.stringify(exerciseTest, null, 2);
 // Parse JSON and cast to interfaces
 const parsedExerciseTest: ExerciseTest = JSON.parse(exerciseTestJSON);
 
-
 async function runCode (parsedExerciseTest: ExerciseTest): Promise<TestResponse[]> {
     // convert parsedExerciseTest to directories and files
     testRunnerRunner(parsedExerciseTest);  
@@ -134,8 +136,11 @@ async function runAllTests() : Promise<TestResponse[]> {
             testResults.push((
                 await compileAndRun(parsedExerciseTest, testCase.code, testCase.testCaseId)));
             
-            if (testResults[testResults.length - 1].responseCode == ("16" || "69")) {
+            console.log(`\ntest result: ${testResults[testResults.length - 1].responseCode}\n`)
+            if (testResults[testResults.length - 1].responseCode == (`${COMPILATION_ERROR_CODE}` || `${EXECUTION_ERROR_CODE}`)) {
                 throw new Error("Test failed");
+            } else if (testResults[testResults.length - 1].responseCode == `${TIMEDOUT_CODE}`) {
+                throw new Error("Test timed out");
             }
         }
     } catch (error) {

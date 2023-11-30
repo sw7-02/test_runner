@@ -6,14 +6,6 @@ import { ExerciseTest, Language, TestResponse, COMPILATION_ERROR_CODE, EXECUTION
 const exec = promisify(child_process.exec);
 const execFile = promisify(child_process.execFile);
 
-function readFromFile(filePath: string): string {
-    try {
-        return fs.readFileSync(filePath, 'utf-8');
-    } catch (error) {
-        process.exit(1);
-    }
-}
-
 // Function to compile and run code based on the detected language
 async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_case_id: string): Promise<TestResponse> {
     let response: TestResponse = {

@@ -1,6 +1,5 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { ExerciseTest } from "./lib";
-import * as fs from "fs";
 
 // Creates a directory for all resources.
 function testRunnerRunner(exerciseTest: ExerciseTest) {

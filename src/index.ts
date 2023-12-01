@@ -26,13 +26,13 @@ app.post("/", async (req, res) => {
         return res
             .status(400)
             .send("All necessary parameters were not provided");
-    else if ((exerciseTest.code = ""))
+    else if ((exerciseTest.code === ""))
         return res.status(400).send("No code provided");
-    else if ((exerciseTest.language = ""))
+    else if ((exerciseTest.language === ""))
         return res.status(400).send("No code language provided");
-    else if ((exerciseTest.userId = ""))
+    else if ((exerciseTest.userId === ""))
         return res.status(400).send("No student ID provided");
-    else if ((exerciseTest.testCases.length = 0))
+    else if ((exerciseTest.testCases.length === 0))
         return res.status(400).send("No tests provided");
 
     // TODO: handle thrown errors

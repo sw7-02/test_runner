@@ -4,7 +4,7 @@ import * as fs from "fs";
 
 // Creates a directory for all resources.
 function testRunnerRunner (exerciseTest: ExerciseTest) {
-    const { studentID, language, code, testCases } = exerciseTest;
+    const { userId: studentID, language, code, testCases } = exerciseTest;
     createDirectory(studentID);
     createDirectory(`${studentID}/tests`);
     createFiles(`src/${studentID}/exerciseFile.${language}`, code);

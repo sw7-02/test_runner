@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { testRunnerRunner } from "./converter";
-import { COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, ExerciseTest, TIMEDOUT_CODE, TestResponse } from "./lib";
+import { COMPILATION_ERROR_CODE, ExerciseTest, TIMEDOUT_CODE, TestResponse } from "./lib";
 import { compileAndRun } from "./compile_and_run";
 import { resolve } from "path";
 
@@ -10,9 +10,7 @@ const exerciseTest = {
     "language": "c",
     "code": `int addTwoNumbers(int number1, int number2) {
     int sum;
-    while(1) {
-        sum = number1 + number2;
-    }
+    sum = number1 + number2
     return sum;
 }
     `,
@@ -137,16 +135,16 @@ async function runAllTests() : Promise<TestResponse[]> {
                 await compileAndRun(parsedExerciseTest, testCase.code, testCase.testCaseId)));
             
             console.log(`\ntest result: ${testResults[testResults.length - 1].responseCode}\n`)
-            if (testResults[testResults.length - 1].responseCode == (`${COMPILATION_ERROR_CODE}` || `${EXECUTION_ERROR_CODE}`)) {
+            if (testResults[testResults.length - 1].responseCode == (COMPILATION_ERROR_CODE)) {
                 throw new Error("Test failed");
-            } else if (testResults[testResults.length - 1].responseCode == `${TIMEDOUT_CODE}`) {
+            } else if (testResults[testResults.length - 1].responseCode == TIMEDOUT_CODE) {
                 throw new Error("Test timed out");
             }
         }
     } catch (error) {
         console.error("OUTER ERROR HAS BEEN FOUND: " + error);
     } finally {
-        deleteDirectory(`src/${parsedExerciseTest.studentID}`);
+        deleteDirectory(`src/${parsedExerciseTest.userId}`);
         //console.log(testResults);
         return testResults;
     }

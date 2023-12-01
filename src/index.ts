@@ -4,7 +4,7 @@ import * as bodyParser from "body-parser";
 import helmet from "helmet";
 import cors from "cors";
 //import cors = require("cors");//Lukas skal køre det sådan her
-import { ExerciseTest } from "./lib";
+import { COMPILATION_ERROR_CODE, ExerciseTest, TIMEDOUT_CODE, UNKNOWN_FAILURE_CODE } from "./lib";
 import { runCode } from "./test_runner"
 
 const app = express();
@@ -23,7 +23,7 @@ app.post("/", async (req, res) => {
         return res.status(400).send("No code provided");   
     else if (exerciseTest.language = "")
         return res.status(400).send("No code language provided");
-    else if (exerciseTest.studentID = "")
+    else if (exerciseTest.userId = "")
         return res.status(400).send("No student ID provided")
     else if (exerciseTest.testCases.length = 0)
         return res.status(400).send("No tests provided");
@@ -31,7 +31,16 @@ app.post("/", async (req, res) => {
     // TODO: handle thrown errors
 
     const testResults = await runCode(exerciseTest);
-    return res.send(testResults);
+
+    testResults.forEach((testResult) => {
+        if(testResult.responseCode == (COMPILATION_ERROR_CODE || TIMEDOUT_CODE || UNKNOWN_FAILURE_CODE))
+            return res.status(422).send(testResult);
+        
+    });
+
+
+    return res.status(200).send(testResults);
+
 })
 
 

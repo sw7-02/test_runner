@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as child_process from 'child_process';
 import { promisify } from 'util';
-import { ExerciseTest, Language, TestResponse, COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE, TIMEDOUT_CODE } from './lib';
+import { ExerciseTest, Language, TestResponse, COMPILATION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE, TIMEDOUT_CODE, UNKNOWN_FAILURE_CODE } from './lib';
 import { TIMEOUT } from 'dns';
 import { stderr } from 'process';
 
@@ -13,9 +13,9 @@ const TIMEOUT_DURATION = 3000; // 5 seconds in milliseconds
 // Function to compile and run code based on the detected language
 async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_case_id: string): Promise<TestResponse> {
     let response: TestResponse = {
-        test_case_id: test_case_id,
+        testCaseId: test_case_id,
         reason: "",
-        responseCode: ""
+        responseCode: 999
     }
 
     return new Promise(async (resolve, reject) => {
@@ -23,22 +23,10 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
         let runCommand: string;
 
         // Create temporary file path
-        const tempFilePath = `src/${exerciseTest.studentID}/temp${test_case_id}.${exerciseTest.language}`
-        const executableFilePath = `src/${exerciseTest.studentID}/temp${test_case_id}`
+        const tempFilePath = `src/${exerciseTest.userId}/temp${test_case_id}.${exerciseTest.language}`
+        const executableFilePath = `src/${exerciseTest.userId}/temp${test_case_id}`
 
         switch (exerciseTest.language) {
-            case Language.TypeScript:
-                compileCommand = 'tsc';
-                runCommand = 'node';
-                break;
-            case Language.JavaScript:
-                compileCommand = '';
-                runCommand = 'node';
-                break;
-            case Language.Python:
-                compileCommand = '';
-                runCommand = 'python';
-                break;
             case Language.C:
                 compileCommand = `gcc -o ${executableFilePath} ${tempFilePath} -lcunit`;
                 runCommand = `./${executableFilePath}`;
@@ -55,9 +43,9 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
         await exec(compileCommand).catch((reason) => {
             console.error(`Compilation error: ${reason.stderr}`);
             resolve({
-                test_case_id: test_case_id,
+                testCaseId: test_case_id,
                 reason: reason.stderr,
-                responseCode: `${COMPILATION_ERROR_CODE}`
+                responseCode: COMPILATION_ERROR_CODE
             });
             return;
         });
@@ -69,27 +57,25 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
                 response.reason = result;
                 //TODO: better logic for identifieng failure and passes
                 if (result.includes("Test failed"))
-                    response.responseCode = `${TEST_FAILED_CODE}`;
+                    response.responseCode = TEST_FAILED_CODE;
                 else if (result.includes("Test passed"))
-                    response.responseCode = `${TEST_PASSED_CODE}`;
+                    response.responseCode = TEST_PASSED_CODE;
                 else
-                    response.responseCode = "Unknown";
+                    response.responseCode = UNKNOWN_FAILURE_CODE;
         
                 console.log(result)
                 resolve(response);
             }, (reason) => {
-                console.log("\n\nreason.code = "+ reason + "\n\n");
                 if(reason.stderr == ""){
-                    return resolve({test_case_id: test_case_id,
+                    return resolve({testCaseId: test_case_id,
                         reason: "timed out",
-                        responseCode: `${TIMEDOUT_CODE}`});
+                        responseCode: TIMEDOUT_CODE});
                 } else {
-                    console.log(`\nExecution stderr: ${reason.stderr}\n`);
-                    resolve({test_case_id: test_case_id,
+                    console.log(`\nUnknown stderr: ${reason.stderr}\n`);
+                    resolve({testCaseId: test_case_id,
                         reason: reason.stderr,
-                        responseCode: `${EXECUTION_ERROR_CODE}`});
+                        responseCode: UNKNOWN_FAILURE_CODE});
                 }
-                    
             });
     });
 }

@@ -8,13 +8,13 @@ const TEST_PASSED_CODE = 0;
 
 // Enum representing supported programming languages
 enum Language {
-    C = 'c',
+    C = "c",
 }
 
 interface TestResponse {
-    testCaseId: string
-    reason: string
-    responseCode: number
+    testCaseId: string;
+    reason: string;
+    responseCode: number;
 }
 
 interface ExerciseTest {
@@ -31,10 +31,20 @@ interface TestCase {
 
 function readFromFile(filePath: string): string {
     try {
-        return fs.readFileSync(filePath, 'utf-8');
+        return fs.readFileSync(filePath, "utf-8");
     } catch (error) {
         process.exit(1);
     }
 }
 
-export {Language, TestResponse, ExerciseTest, readFromFile, UNKNOWN_FAILURE_CODE, COMPILATION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE, TIMEDOUT_CODE}
+export {
+    Language,
+    TestResponse,
+    ExerciseTest,
+    readFromFile,
+    UNKNOWN_FAILURE_CODE,
+    COMPILATION_ERROR_CODE,
+    TEST_PASSED_CODE,
+    TEST_FAILED_CODE,
+    TIMEDOUT_CODE,
+};

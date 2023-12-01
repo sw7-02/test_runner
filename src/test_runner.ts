@@ -15,7 +15,7 @@ const exerciseTest = {
     language: "c",
     code: `int addTwoNumbers(int number1, int number2) {
     int sum;
-    sum = number1 + number2
+    sum = number1 + number2;
     return sum;
 }
     `,
@@ -192,8 +192,8 @@ function deleteDirectory(directoryPath: string): void {
 
 //let testResults = runCode(parsedExerciseTest);
 //console.log(`Here: ${testResults}`)
-runCode(parsedExerciseTest).then((testResults) => {
+/*runCode(parsedExerciseTest).then((testResults) => {
     console.log(`Here: ${JSON.stringify(testResults)}`);
-});
+});*/
 
 export { runCode };

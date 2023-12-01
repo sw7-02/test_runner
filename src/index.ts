@@ -20,20 +20,22 @@ app.use(helmet());
 app.use(bodyParser.json());
 
 app.post("/", async (req, res) => {
-    console.log(req.body);
+    console.error(req.body);
     const exerciseTest = (await req.body) as ExerciseTest;
     if (!exerciseTest)
         return res
             .status(400)
             .send("All necessary parameters were not provided");
-    else if ((exerciseTest.code = ""))
+    else if (exerciseTest.code === undefined || exerciseTest.code.trim() === "")
         return res.status(400).send("No code provided");
-    else if ((exerciseTest.language = ""))
+    else if (exerciseTest.language === undefined || exerciseTest.language.trim() === "")
         return res.status(400).send("No code language provided");
-    else if ((exerciseTest.userId = ""))
+    else if (exerciseTest.userId === undefined || exerciseTest.userId.trim() === "")
         return res.status(400).send("No student ID provided");
-    else if ((exerciseTest.testCases.length = 0))
+    else if (exerciseTest.testCases === undefined || exerciseTest.testCases.length === 0)
         return res.status(400).send("No tests provided");
+    else if (exerciseTest.testCases.find(({code, testCaseId}) => testCaseId === undefined || code === undefined || code.trim().length === 0))
+        return res.status(400).send("One or more valid test(s) provided");
 
     // TODO: handle thrown errors
 

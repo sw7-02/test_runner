@@ -147,19 +147,23 @@ async function runAllTests() : Promise<TestResponse[]> {
     } catch (error) {
         console.error("OUTER ERROR HAS BEEN FOUND: " + error);
     } finally {
-        deleteDirectory(`src/${parsedExerciseTest.studentID}`);
+        await deleteDirectory(`src/${parsedExerciseTest.studentID}`);
         //console.log(testResults);
         return testResults;
     }
 }
 
-function deleteDirectory(directoryPath: string): void{
-    fs.rm(directoryPath, { recursive:true }, (err) => { 
-        if(err){ 
-            console.error(`Error deleting directory ${directoryPath}:` + err.message); 
-            return;
-        } 
-        console.log(`Directory ${directoryPath} deleted successfully.`); 
+async function deleteDirectory(directoryPath: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        fs.rm(directoryPath, { recursive: true }, (err) => {
+            if (err) {
+                console.error(`Error deleting directory ${directoryPath}: ${err.message}`);
+                reject(err);
+            } else {
+                console.log(`Directory ${directoryPath} deleted successfully.`);
+                resolve();
+            }
+        });
     });
 }
 
@@ -170,4 +174,4 @@ runCode(parsedExerciseTest)
         console.log(`Here: ${JSON.stringify(testResults)}`);
     })
 
-export {runCode};
+export {runCode, deleteDirectory};

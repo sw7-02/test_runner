@@ -4,6 +4,9 @@ import * as fs from "fs";
 import { ExerciseTest, Language } from '../src/lib';
 import { beforeEach } from 'mocha';
 import path from 'path';
+import { mkdirSync } from 'fs';
+import { deleteDirectory } from '../src/test_runner';
+import sinon from 'sinon';
 
 const testCodePassed: string = ` 
 #include <CUnit/CUnit.h>
@@ -53,28 +56,77 @@ int main(void) {
 }
                 `;
 
-describe(' tests', () => {
+const exerciseTest: ExerciseTest = {
+    studentID: 'testStudent',
+    language: Language.C,
+    code: 
+    `int addTwoNumbers(int number1, int number2) {
+        int sum;
+        sum = number1 + number2;
+        return sum;
+    }
+        `,
+    testCases: [{ "testCaseId": "1", "code": testCodePassed}]
+};
+
+describe('deleteDirectory tests', () => {
     afterEach(function () {
         const directoryPath = path.join(__dirname, '../src/testStudent');
-        fs.rmSync(directoryPath, { recursive: true });
+        if(fs.existsSync(directoryPath))
+            fs.rmSync(directoryPath, { recursive: true });
     });
 
-    it('should create directories and files for the given exerciseTest', () => {
-        const exerciseTest: ExerciseTest = {
-            studentID: 'testStudent',
-            language: Language.C,
-            code: 
-            `int addTwoNumbers(int number1, int number2) {
-                int sum;
-                sum = number1 + number2;
-                return sum;
-            }
-                `,
-            testCases: [{ "testCaseId": "1", "code": testCodePassed}]
-        };
+    
+    it('Delete empty directory', async () => {
+        const directoryPath = `src/${exerciseTest.studentID}`;
 
+        // creates directory necessary to perform the test
+        mkdirSync(directoryPath);
+        expect(fs.existsSync(directoryPath)).to.be.true;
+        
+        await deleteDirectory(directoryPath);
+        expect(fs.existsSync(directoryPath)).to.be.false;
+        
+    });
+
+    it('Delete directory containing files', async () => {
+        const directoryPath = `src/${exerciseTest.studentID}`;
+
+        // creates all directories and files necessary to perform test
+        testRunnerRunner(exerciseTest); 
+        expect(fs.existsSync(directoryPath)).to.be.true;
+
+        await deleteDirectory(directoryPath);
+        expect(fs.existsSync(directoryPath)).to.be.false;
+    });
+
+    /*it('Unable to delete directory', () => {
+        deleteDirectory(`src/student1`);
        
-    });
-    // Add more test cases as needed
+    });*/
+
+    it('should log an error message when fs.rm encounters an error', async () => {
+        const directoryPath = `src/${exerciseTest.studentID}`;
+        const errorMessage = 'Simulated error';
+    
+        // Stub fs.rm to simulate an error
+        const fsRmStub = sinon.stub(fs, 'rm');
+        fsRmStub.yields(new Error(errorMessage));
+    
+        // Stub console.error to capture the error message
+        const consoleErrorStub = sinon.stub(console, 'error');
+    
+        // Call the function under test
+        await deleteDirectory(directoryPath);
+    
+        // Assertions
+        expect(fsRmStub.calledOnceWith(directoryPath, { recursive: true })).to.be.true;
+        expect(consoleErrorStub.calledOnceWith(`Error deleting directory ${directoryPath}:${errorMessage}`)).to.be.true;
+    
+        // Restore stubs
+        fsRmStub.restore();
+        consoleErrorStub.restore();
+      });
+
 });
 

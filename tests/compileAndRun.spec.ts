@@ -149,7 +149,7 @@ int main(void) {
 }
                 `;
 
-describe('compileAndRun', () => {
+describe('compileAndRun tests', () => {
     afterEach(function () {
         const directoryPath = path.join(__dirname, '../src/testStudent');
         if(fs.existsSync(directoryPath))

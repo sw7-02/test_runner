@@ -6,12 +6,11 @@ import * as fs from "fs";
 function testRunnerRunner (exerciseTest: ExerciseTest) {
     const { userId: studentID, language, code, testCases } = exerciseTest;
     createDirectory(studentID);
-    createDirectory(`${studentID}/tests`);
     createFiles(`src/${studentID}/exerciseFile.${language}`, code);
     testCases.forEach(testCase => {
-        createFiles(`src/${studentID}/tests/testFile${testCase.testCaseId}.${language}`, testCase.code, 
+        createFiles(`src/${studentID}/testFile${testCase.testCaseId}.${language}`, testCase.code, 
             `#include "exerciseFile.${language}"`);
-        testCase.code = readFileSync(`src/${studentID}/tests/testFile${testCase.testCaseId}.${language}`, "utf-8");
+        testCase.code = readFileSync(`src/${studentID}/testFile${testCase.testCaseId}.${language}`, "utf-8");
     });    
 }
 

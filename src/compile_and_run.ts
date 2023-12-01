@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as child_process from 'child_process';
 import { promisify } from 'util';
 import { ExerciseTest, Language, TestResponse, COMPILATION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE, TIMEDOUT_CODE, UNKNOWN_FAILURE_CODE } from './lib';
@@ -22,13 +21,13 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
         let compileCommand: string;
         let runCommand: string;
 
-        // Create temporary file path
-        const tempFilePath = `src/${exerciseTest.userId}/temp${test_case_id}.${exerciseTest.language}`
-        const executableFilePath = `src/${exerciseTest.userId}/temp${test_case_id}`
+        // Create code file path
+        const codeFilePath = `src/${exerciseTest.userId}/testFile${test_case_id}.${exerciseTest.language}`
+        const executableFilePath = `src/${exerciseTest.userId}/testFile${test_case_id}`
 
         switch (exerciseTest.language) {
             case Language.C:
-                compileCommand = `gcc -o ${executableFilePath} ${tempFilePath} -lcunit`;
+                compileCommand = `gcc -o ${executableFilePath} ${codeFilePath} -lcunit`;
                 runCommand = `./${executableFilePath}`;
                 break;
             default:
@@ -36,8 +35,6 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
                 reject(`Unsupported Language: ${exerciseTest.language}`);
                 return process.exit(1);
         }
-
-        fs.writeFileSync(tempFilePath, testCode, 'utf-8');   
         
         // Compile the code
         await exec(compileCommand).catch((reason) => {

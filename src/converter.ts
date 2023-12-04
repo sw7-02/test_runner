@@ -13,7 +13,8 @@ function testRunnerRunner(exerciseTest: ExerciseTest) {
         const functionName = match ? match[1] + `)` : null;
 
         createFiles(
-            `${studentID}/testFile${testCase.testCaseId}.${language}`,`
+            `${studentID}/testFile${testCase.testCaseId}.${language}`,
+            `
 #include "exerciseFile.${language}"
 
 #include <CUnit/CUnit.h>

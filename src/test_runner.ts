@@ -136,11 +136,11 @@ async function runCode(
     testRunnerRunner(parsedExerciseTest);
 
     // Call the async function
-    return await runAllTests();
+    return await runAllTests(parsedExerciseTest);
 }
 
 // Compile and run tests
-async function runAllTests(): Promise<TestResponse[]> {
+async function runAllTests(parsedExerciseTest: ExerciseTest): Promise<TestResponse[]> {
     const testResults: TestResponse[] = [];
     try {
         for (const testCase of parsedExerciseTest.testCases) {

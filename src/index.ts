@@ -19,53 +19,50 @@ app.use(cors());
 app.use(helmet());
 app.use(bodyParser.json());
 
-app.post("/", async (req, res) => {
-    console.error(req.body);
-    const exerciseTest = (await req.body) as ExerciseTest;
-    if (!exerciseTest)
-        return res
-            .status(400)
-            .send("All necessary parameters were not provided");
-    else if (exerciseTest.code === undefined || exerciseTest.code.trim() === "")
-        return res.status(400).send("No code provided");
+// For healthchecking
+app.get("/status", (_, res) => res.send("Service is running!"));
+
+function validateData(data: ExerciseTest): string | undefined {
+    if (!data) return "All necessary parameters were not provided";
+    else if (data.code === undefined || data.code.trim() === "")
+        return "No code provided";
+    else if (data.language === undefined || data.language.trim() === "")
+        return "No code language provided";
+    else if (data.userId === undefined) return "No student ID provided";
+    else if (data.testCases === undefined || data.testCases.length === 0)
+        return "No tests provided";
     else if (
-        exerciseTest.language === undefined ||
-        exerciseTest.language.trim() === ""
-    )
-        return res.status(400).send("No code language provided");
-    else if (
-        exerciseTest.userId === undefined ||
-        exerciseTest.userId.trim() === ""
-    )
-        return res.status(400).send("No student ID provided");
-    else if (
-        exerciseTest.testCases === undefined ||
-        exerciseTest.testCases.length === 0
-    )
-        return res.status(400).send("No tests provided");
-    else if (
-        exerciseTest.testCases.find(
+        data.testCases.find(
             ({ code, testCaseId }) =>
                 testCaseId === undefined ||
                 code === undefined ||
                 code.trim().length === 0,
         )
     )
-        return res.status(400).send("One or more valid test(s) provided");
+        return "One or more valid test(s) provided";
+}
+
+app.post("/", async (req, res) => {
+    console.error(req.body);
+    const exerciseTest = (await req.body) as ExerciseTest;
+
+    const validated = validateData(exerciseTest);
+    if (validated !== undefined) {
+        res.status(400).send(validated);
+        return;
+    }
 
     // TODO: handle thrown errors
 
     const testResults = await runCode(exerciseTest);
 
-    testResults.forEach((testResult) => {
-        if (
+    const err = testResults.find(
+        (testResult) =>
             testResult.responseCode ==
-            (COMPILATION_ERROR_CODE || TIMEDOUT_CODE || UNKNOWN_FAILURE_CODE)
-        )
-            return res.status(422).send(testResult);
-    });
-
-    return res.status(200).send(testResults);
+            (COMPILATION_ERROR_CODE || TIMEDOUT_CODE || UNKNOWN_FAILURE_CODE),
+    );
+    if (err !== undefined) res.status(422).send(err);
+    else res.status(200).send(testResults);
 });
 
 app.listen(3000, () => {

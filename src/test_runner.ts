@@ -8,7 +8,7 @@ import {
 } from "./lib";
 import { compileAndRun } from "./compile_and_run";
 import { resolve } from "path";
-
+/*
 // receive API call (with JSON object)
 // TODO: Replace exerciseTest example with real data (some sort of handling)
 const exerciseTest = {
@@ -36,7 +36,7 @@ const exerciseTest = {
 const exerciseTestJSON = JSON.stringify(exerciseTest, null, 2);
 // Parse JSON and cast to interfaces
 const parsedExerciseTest: ExerciseTest = JSON.parse(exerciseTestJSON);
-
+*/
 async function runCode(
     parsedExerciseTest: ExerciseTest,
 ): Promise<TestResponse[]> {
@@ -44,11 +44,11 @@ async function runCode(
     testRunnerRunner(parsedExerciseTest);
 
     // Call the async function
-    return await runAllTests();
+    return await runAllTests(parsedExerciseTest);
 }
 
 // Compile and run tests
-async function runAllTests(): Promise<TestResponse[]> {
+async function runAllTests(parsedExerciseTest: ExerciseTest): Promise<TestResponse[]> {
     const testResults: TestResponse[] = [];
     try {
         for (const testCase of parsedExerciseTest.testCases) {
@@ -97,10 +97,10 @@ function deleteDirectory(directoryPath: string): void {
         console.log(`Directory ${directoryPath} deleted successfully.`);
     });
 }
-
+/*
 let testResults = runCode(parsedExerciseTest);
 console.log(`Here: ${testResults}`)
-/*runCode(parsedExerciseTest).then((testResults) => {
+runCode(parsedExerciseTest).then((testResults) => {
     console.log(`Here: ${JSON.stringify(testResults)}`);
 });*/
 

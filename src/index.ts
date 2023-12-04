@@ -61,7 +61,7 @@ app.post("/", async (req, res) => {
             testResult.responseCode ==
             (COMPILATION_ERROR_CODE || TIMEDOUT_CODE || UNKNOWN_FAILURE_CODE),
     );
-    if (err !== undefined) res.status(422).send(err);
+    if (err !== undefined) res.status(422).send([err]);
     else res.status(200).send(testResults);
 });
 

@@ -5,22 +5,72 @@ import { ExerciseTest } from "./lib";
 function testRunnerRunner(exerciseTest: ExerciseTest) {
     const { userId: studentID, language, code, testCases } = exerciseTest;
     createDirectory(studentID);
-    createFiles(`src/${studentID}/exerciseFile.${language}`, code);
+    createFiles(`${studentID}/exerciseFile.${language}`, code);
     testCases.forEach((testCase) => {
+        const inputString = testCase.code;
+        const regex = /CU_[^\(]*\(([^)]+)\)/;
+        const match = inputString.match(regex);
+        const functionName = match ? match[1] + `)` : null;
+
         createFiles(
-            `src/${studentID}/testFile${testCase.testCaseId}.${language}`,
-            testCase.code,
-            `#include "exerciseFile.${language}"`,
+            `${studentID}/testFile${testCase.testCaseId}.${language}`,`
+#include "exerciseFile.${language}"
+
+#include <CUnit/CUnit.h>
+#include <CUnit/Basic.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+void testFunc(void) {
+    ${testCase.code}
+}
+
+int main(void) {
+    // Initialize the CUnit test registry
+    if (CUE_SUCCESS != CU_initialize_registry()) {
+        return CU_get_error();
+    }
+
+    // Add a suite to the registry
+    CU_pSuite suite = CU_add_suite("Suite_1", NULL, NULL);
+    if (suite == NULL) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+    // Add the test function to the suite
+    if (CU_add_test(suite, "testFunc", testFunc) == NULL) {
+        CU_cleanup_registry();
+        return CU_get_error();
+    }
+
+
+    // Run the tests using the basic interface
+    CU_basic_set_mode(CU_BRM_SILENT);
+    CU_basic_run_suite(suite);
+    
+    int num_failures = CU_get_number_of_failures();
+
+    // Print only if there are failures
+    if (num_failures > 0) {
+        printf("\\nTest failed\\n Expected:");
+        CU_basic_show_failures(CU_get_failure_list());
+
+        printf("\\nActual: %d\\n", ${functionName});
+    } else {
+        printf("Test passed\\n");
+    }
+}`,
         );
         testCase.code = readFileSync(
-            `src/${studentID}/testFile${testCase.testCaseId}.${language}`,
+            `${studentID}/testFile${testCase.testCaseId}.${language}`,
             "utf-8",
         );
     });
 }
 
 function createDirectory(directory: string): void {
-    const path = `src/${directory}`;
+    const path = `${directory}`;
     if (!existsSync(path)) {
         mkdirSync(path);
         console.log(`Directory ${path} created!`);

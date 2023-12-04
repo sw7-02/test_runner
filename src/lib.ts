@@ -1,5 +1,5 @@
 import fs from "fs";
-
+//import * as fs from "fs"; //Lukas skal køre det sådan her
 const UNKNOWN_FAILURE_CODE = 4;
 const TIMEDOUT_CODE = 3;
 const COMPILATION_ERROR_CODE = 2;

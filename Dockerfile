@@ -27,7 +27,7 @@ RUN npm run build
 
 # The runtime stage
 FROM node:alpine3.17
-RUN apk add --update --no-cache build-base
+RUN apk add --update --no-cache build-base cunit cunit-dev
 
 # Defaults to production, docker-compose overrides this to development on build and run.
 ARG NODE_ENV=production

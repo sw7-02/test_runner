@@ -136,11 +136,11 @@ async function runCode(
     testRunnerRunner(parsedExerciseTest);
 
     // Call the async function
-    return await runAllTests(parsedExerciseTest);
+    return await runAllTests();
 }
 
 // Compile and run tests
-async function runAllTests(parsedExerciseTest: ExerciseTest): Promise<TestResponse[]> {
+async function runAllTests(): Promise<TestResponse[]> {
     const testResults: TestResponse[] = [];
     try {
         for (const testCase of parsedExerciseTest.testCases) {
@@ -172,10 +172,10 @@ async function runAllTests(parsedExerciseTest: ExerciseTest): Promise<TestRespon
     } catch (error) {
         console.error("OUTER ERROR HAS BEEN FOUND: " + error);
     } finally {
-        deleteDirectory(`src/${parsedExerciseTest.userId}`);
+        //deleteDirectory(`src/${parsedExerciseTest.userId}`);
         //console.log(testResults);
-        return testResults;
     }
+    return testResults;
 }
 
 function deleteDirectory(directoryPath: string): void {

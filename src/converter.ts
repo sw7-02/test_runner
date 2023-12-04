@@ -5,22 +5,22 @@ import { ExerciseTest } from "./lib";
 function testRunnerRunner(exerciseTest: ExerciseTest) {
     const { userId: studentID, language, code, testCases } = exerciseTest;
     createDirectory(studentID);
-    createFiles(`src/${studentID}/exerciseFile.${language}`, code);
+    createFiles(`${studentID}/exerciseFile.${language}`, code);
     testCases.forEach((testCase) => {
         createFiles(
-            `src/${studentID}/testFile${testCase.testCaseId}.${language}`,
+            `${studentID}/testFile${testCase.testCaseId}.${language}`,
             testCase.code,
             `#include "exerciseFile.${language}"`,
         );
         testCase.code = readFileSync(
-            `src/${studentID}/testFile${testCase.testCaseId}.${language}`,
+            `${studentID}/testFile${testCase.testCaseId}.${language}`,
             "utf-8",
         );
     });
 }
 
 function createDirectory(directory: string): void {
-    const path = `src/${directory}`;
+    const path = `${directory}`;
     if (!existsSync(path)) {
         mkdirSync(path);
         console.log(`Directory ${path} created!`);

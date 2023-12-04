@@ -35,8 +35,8 @@ async function compileAndRun(
         let runCommand: string;
 
         // Create code file path
-        const codeFilePath = `src/${exerciseTest.userId}/testFile${test_case_id}.${exerciseTest.language}`;
-        const executableFilePath = `src/${exerciseTest.userId}/testFile${test_case_id}`;
+        const codeFilePath = `${exerciseTest.userId}/testFile${test_case_id}.${exerciseTest.language}`;
+        const executableFilePath = `${exerciseTest.userId}/testFile${test_case_id}`;
 
         switch (exerciseTest.language) {
             case Language.C:

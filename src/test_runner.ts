@@ -19,7 +19,7 @@ const exerciseTest = {
     return sum;
 }
     `,
-    studentID: "67890",
+    userId: "67890",
     testCases: [
         {
             testCaseId: 1,
@@ -172,7 +172,7 @@ async function runAllTests(): Promise<TestResponse[]> {
     } catch (error) {
         console.error("OUTER ERROR HAS BEEN FOUND: " + error);
     } finally {
-        deleteDirectory(`src/${parsedExerciseTest.userId}`);
+        deleteDirectory(`${parsedExerciseTest.userId}`);
         //console.log(testResults);
         return testResults;
     }
@@ -190,8 +190,8 @@ function deleteDirectory(directoryPath: string): void {
     });
 }
 
-//let testResults = runCode(parsedExerciseTest);
-//console.log(`Here: ${testResults}`)
+let testResults = runCode(parsedExerciseTest);
+console.log(`Here: ${testResults}`)
 /*runCode(parsedExerciseTest).then((testResults) => {
     console.log(`Here: ${JSON.stringify(testResults)}`);
 });*/

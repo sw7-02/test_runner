@@ -39,7 +39,7 @@ function validateData(data: ExerciseTest): string | undefined {
                 code.trim().length === 0,
         )
     )
-        return "One or more valid test(s) provided";
+        return "One or more invalid test(s) provided";
 }
 
 app.post("/", async (req, res) => {

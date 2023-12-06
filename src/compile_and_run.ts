@@ -10,13 +10,11 @@ import {
     TIMEDOUT_CODE,
     UNKNOWN_FAILURE_CODE,
 } from "./lib";
-import { TIMEOUT } from "dns";
-import { stderr } from "process";
 
 const exec = promisify(child_process.exec);
 const execFile = promisify(child_process.execFile);
 
-const TIMEOUT_DURATION = 3000; // 5 seconds in milliseconds
+const TIMEOUT_DURATION = 30000; // 30 seconds in milliseconds
 
 // Function to compile and run code based on the detected language
 async function compileAndRun(

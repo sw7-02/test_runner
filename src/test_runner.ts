@@ -7,7 +7,7 @@ import {
     TestResponse,
 } from "./lib";
 import { compileAndRun } from "./compile_and_run";
-import { resolve } from "path";
+
 /*
 // receive API call (with JSON object)
 // TODO: Replace exerciseTest example with real data (some sort of handling)
@@ -48,7 +48,9 @@ async function runCode(
 }
 
 // Compile and run tests
-async function runAllTests(parsedExerciseTest: ExerciseTest): Promise<TestResponse[]> {
+async function runAllTests(
+    parsedExerciseTest: ExerciseTest,
+): Promise<TestResponse[]> {
     const testResults: TestResponse[] = [];
     try {
         for (const testCase of parsedExerciseTest.testCases) {
@@ -82,8 +84,8 @@ async function runAllTests(parsedExerciseTest: ExerciseTest): Promise<TestRespon
     } finally {
         deleteDirectory(`${parsedExerciseTest.userId}`);
         //console.log(testResults);
-        return testResults;
     }
+    return testResults;
 }
 
 function deleteDirectory(directoryPath: string): void {

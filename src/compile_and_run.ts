@@ -36,7 +36,7 @@ async function compileAndRun(
         const codeFilePath = `${exerciseTest.userId}/testFile${test_case_id}.${exerciseTest.language}`;
         const executableFilePath = `${exerciseTest.userId}/testFile${test_case_id}`;
 
-        switch (exerciseTest.language) {
+        switch (exerciseTest.language.toLowerCase()) {
             case Language.C:
                 compileCommand = `gcc -o ${executableFilePath} ${codeFilePath} -lcunit`;
                 runCommand = `./${executableFilePath}`;

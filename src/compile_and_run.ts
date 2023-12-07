@@ -28,7 +28,6 @@ async function compileAndRun(
         responseCode: 999,
     };
 
-
     return new Promise(async (resolve, reject) => {
         let compileCommand: string;
         let runCommand: string;
@@ -46,7 +45,7 @@ async function compileAndRun(
                 return resolve({
                     testCaseId: test_case_id,
                     reason: "Unsupported langugage",
-                    responseCode: UNSUPPORTED_LANGUGAGE
+                    responseCode: UNSUPPORTED_LANGUGAGE,
                 });
         }
 

@@ -1,12 +1,16 @@
-import { expect } from 'chai';
-import {testRunnerRunner, createFiles, createDirectory} from "../src/converter";
+import { expect } from "chai";
+import {
+    testRunnerRunner,
+    createFiles,
+    createDirectory,
+} from "../src/converter";
 import * as fs from "fs";
-import { ExerciseTest } from '../src/lib';
-import path from 'path';
+import { ExerciseTest } from "../src/lib";
+import path from "path";
 
 const exerciseTest: ExerciseTest = {
-    userId: 'testStudent',
-    language: 'c',
+    userId: "testStudent",
+    language: "c",
     code: 'console.log("Hello, World!");',
     testCases: [
         {
@@ -16,19 +20,23 @@ const exerciseTest: ExerciseTest = {
     ],
 };
 
-describe('testRunnerRunner tests', () => {
+describe("testRunnerRunner tests", () => {
     afterEach(function () {
-        const directoryPath = path.join(__dirname, '../testStudent');
+        const directoryPath = path.join(__dirname, "../testStudent");
         if (fs.existsSync(directoryPath))
             fs.rmSync(directoryPath, { recursive: true });
     });
 
-    it('should create directories and files for the given exerciseTest', () => {
+    it("should create directories and files for the given exerciseTest", () => {
         testRunnerRunner(exerciseTest);
 
-        const directoryExists: boolean = fs.existsSync('testStudent');
-        const testFileExists: boolean = fs.existsSync('testStudent/exerciseFile.c');
-        const testCaseFileExists: boolean = fs.existsSync('testStudent/testFile1.c');
+        const directoryExists: boolean = fs.existsSync("testStudent");
+        const testFileExists: boolean = fs.existsSync(
+            "testStudent/exerciseFile.c",
+        );
+        const testCaseFileExists: boolean = fs.existsSync(
+            "testStudent/testFile1.c",
+        );
 
         expect(directoryExists).to.be.true;
         expect(testFileExists).to.be.true;
@@ -37,57 +45,63 @@ describe('testRunnerRunner tests', () => {
     // Add more test cases as needed
 });
 
-describe('createDirectories tests', () => {
+describe("createDirectories tests", () => {
     afterEach(function () {
-        const directoryPath = path.join(__dirname, '../tests/testStudent');
+        const directoryPath = path.join(__dirname, "../tests/testStudent");
         if (fs.existsSync(directoryPath))
             fs.rmSync(directoryPath, { recursive: true });
     });
-    
-    it('create a new directory', () => {
-        const localDirectoryPath = path.join(__dirname, `../tests/${exerciseTest.userId}`);
+
+    it("create a new directory", () => {
+        const localDirectoryPath = path.join(
+            __dirname,
+            `../tests/${exerciseTest.userId}`,
+        );
         createDirectory(localDirectoryPath);
 
         expect(fs.existsSync(localDirectoryPath)).to.be.true;
     });
 
     // TODO: mangler en der laver et directory der allerede findes.
-
-    /*
+/*
     it('create a new directory that already exists, catch error', () => {
-        const localDirectoryPath = path.join(__dirname, `../src/${exerciseTest.studentID}`);
+        const localDirectoryPath = path.join(__dirname, `../src/${exerciseTest.userId}`);
         createDirectory(localDirectoryPath);
+        
         //expect(fs.existsSync(localDirectoryPath)).to.be.true;
 
 
         //expect(createDirectory(localDirectoryPath)).to.(Error(`Directory already exists!`));
         
-    });
-    */
-
+    });*/
 });
 
-describe('createFiles tests', () => {
+describe("createFiles tests", () => {
     afterEach(function () {
-        const directoryPath = path.join(__dirname, '../tests/testStudent');
+        const directoryPath = path.join(__dirname, "../tests/testStudent");
         if (fs.existsSync(directoryPath))
             fs.rmSync(directoryPath, { recursive: true });
     });
 
-    it('create a new file without include', () => {
-        const localDirectoryPath = path.join(__dirname, `../tests/${exerciseTest.userId}.c`);
+    it("create a new file without include", () => {
+        const localDirectoryPath = path.join(
+            __dirname,
+            `../tests/${exerciseTest.userId}.c`,
+        );
         createFiles(localDirectoryPath, "");
 
         expect(fs.existsSync(localDirectoryPath)).to.be.true;
         fs.rmSync(localDirectoryPath);
     });
-    
 
-    it('create a new file with include', () => {
-        const localDirectoryPath = path.join(__dirname, `../tests/${exerciseTest.userId}`);
+    it("create a new file with include", () => {
+        const localDirectoryPath = path.join(
+            __dirname,
+            `../tests/${exerciseTest.userId}`,
+        );
         createFiles(localDirectoryPath, "", "");
 
         expect(fs.existsSync(localDirectoryPath)).to.be.true;
         fs.rmSync(localDirectoryPath);
     });
-})
+});

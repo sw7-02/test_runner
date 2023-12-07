@@ -51,8 +51,8 @@ RUN npm ci && npm cache clean --force
 ARG STATUS_PATH=/status
 
 # Setup healthcheck
-HEALTHCHECK --interval=10s --timeout=2s --start-period=15s \
-    CMD PORT=$PORT STATUS_PATH=$STATUS_PATH node /app/healthcheck.js
+# HEALTHCHECK --interval=10s --timeout=2s --start-period=15s \
+#     CMD PORT=$PORT STATUS_PATH=$STATUS_PATH node /app/healthcheck.js
 
 # Very secure
 USER root

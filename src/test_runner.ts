@@ -8,35 +8,6 @@ import {
 } from "./lib";
 import { compileAndRun } from "./compile_and_run";
 
-/*
-// receive API call (with JSON object)
-// TODO: Replace exerciseTest example with real data (some sort of handling)
-const exerciseTest = {
-    language: "c",
-    code: `int addTwoNumbers(int number1, int number2) {
-    int sum;
-    sum = number1 + number2;
-    return sum;
-}
-    `,
-    userId: "67890",
-    testCases: [
-        {
-            testCaseId: 1,
-            code: `CU_ASSERT(addTwoNumbers(1, 2) == 3);`,
-        },
-        {
-            testCaseId: 2,
-            code: `CU_ASSERT(addTwoNumbers(1, 2) == 2);`,
-        },
-    ],
-};
-
-// Convert JSON to ExerciseTest instance
-const exerciseTestJSON = JSON.stringify(exerciseTest, null, 2);
-// Parse JSON and cast to interfaces
-const parsedExerciseTest: ExerciseTest = JSON.parse(exerciseTestJSON);
-*/
 async function runCode(
     parsedExerciseTest: ExerciseTest,
 ): Promise<TestResponse[]> {
@@ -57,7 +28,6 @@ async function runAllTests(
             testResults.push(
                 await compileAndRun(
                     parsedExerciseTest,
-                    testCase.code,
                     testCase.testCaseId,
                 ),
             );
@@ -80,7 +50,7 @@ async function runAllTests(
             }
         }
     } catch (error) {
-        console.error("OUTER ERROR HAS BEEN FOUND: " + error);
+        console.error("Error has been found: " + error);
     } finally {
         deleteDirectory(`${parsedExerciseTest.userId}`);
         //console.log(testResults);
@@ -99,11 +69,5 @@ function deleteDirectory(directoryPath: string): void {
         console.log(`Directory ${directoryPath} deleted successfully.`);
     });
 }
-/*
-let testResults = runCode(parsedExerciseTest);
-console.log(`Here: ${testResults}`)
-runCode(parsedExerciseTest).then((testResults) => {
-    console.log(`Here: ${JSON.stringify(testResults)}`);
-});*/
 
 export { runCode };

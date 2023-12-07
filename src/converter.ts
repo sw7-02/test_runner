@@ -45,6 +45,7 @@ int main(void) {
         return CU_get_error();
     }
 
+    ${testCase.code.split("CU_")[0]}
 
     // Run the tests using the basic interface
     CU_basic_set_mode(CU_BRM_SILENT);

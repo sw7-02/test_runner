@@ -14,12 +14,11 @@ import {
 const exec = promisify(child_process.exec);
 const execFile = promisify(child_process.execFile);
 
-const TIMEOUT_DURATION = 30000; // 30 seconds in milliseconds
+const TIMEOUT_DURATION = 15000; // 15 seconds in milliseconds
 
 // Function to compile and run code based on the detected language
 async function compileAndRun(
     exerciseTest: ExerciseTest,
-    testCode: string,
     test_case_id: string,
 ): Promise<TestResponse> {
     let response: TestResponse = {
@@ -69,8 +68,7 @@ async function compileAndRun(
                 else if (result.includes("Test passed"))
                     response.responseCode = TEST_PASSED_CODE;
                 else response.responseCode = UNKNOWN_FAILURE_CODE;
-
-                console.log(result);
+                
                 resolve(response);
             },
             (reason) => {

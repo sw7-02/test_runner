@@ -47,8 +47,6 @@ RUN npm ci && npm cache clean --force
 # RUN npx prisma generate
 
 # Port to expose which can be overwritten with docker-compose
-ARG PORT=80
-EXPOSE $PORT
 
 ARG STATUS_PATH=/status
 

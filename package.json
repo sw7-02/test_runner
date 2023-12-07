@@ -1,6 +1,6 @@
 {
     "name": "test-runner",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "description": "Yes",
     "devDependencies": {
         "@babel/preset-typescript": "^7.23.3",

@@ -2,15 +2,8 @@
     "configurations": [
         {
             "name": "Win32",
-            "includePath": [
-                "${workspaceFolder}/**",
-                "${workspaceFolder}"
-            ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
-            ],
+            "includePath": ["${workspaceFolder}/**", "${workspaceFolder}"],
+            "defines": ["_DEBUG", "UNICODE", "_UNICODE"],
             "windowsSdkVersion": "10.0.19041.0",
             "compilerPath": "cl.exe",
             "cStandard": "c17",

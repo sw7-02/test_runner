@@ -1,6 +1,6 @@
 # Preparation and creation stage
 # Using a builder stage in order to cache npm installs on seperate stage
-FROM node:alpine3.17 as init
+FROM node as init
 
 # Set current user to non-root in current working directory
 WORKDIR /dist
@@ -8,10 +8,8 @@ RUN chown node:node ./
 #RUN apk add libressl-dev
 # RUN apk add openssl-dev
 #RUN apk add openssl1.1-compat
-RUN apk add --update --no-cache openssl1.1-compat
 #RUN apk update && apk upgrade openssl
 USER node
-RUN apk add libcunit libcunit-dev
 
 # This stage is strictly for development dependencies
 ARG NODE_ENV=development
@@ -19,10 +17,7 @@ ENV NODE_ENV $NODE_ENV
 
 # Copy package confs to builder and make a clean install
 COPY package*.json ./
-COPY prisma ./prisma/
-COPY /.env ./
 RUN npm ci -D && npm cache clean --force
-RUN npx prisma generate
 
 # Copy src and tsconfig on seperate layers as src is highly volatile to changes
 COPY src/ ./src/
@@ -31,8 +26,8 @@ COPY tsconfig.json ./
 RUN npm run build
 
 # The runtime stage
-FROM node:alpine
-RUN apk add --update --no-cache openssl1.1-compat
+FROM node:alpine3.17
+RUN apk add --update --no-cache build-base cunit cunit-dev
 
 # Defaults to production, docker-compose overrides this to development on build and run.
 ARG NODE_ENV=production
@@ -52,14 +47,16 @@ RUN npm ci && npm cache clean --force
 # RUN npx prisma generate
 
 # Port to expose which can be overwritten with docker-compose
-ARG PORT=80
-EXPOSE $PORT
 
-ARG STATUS_PATH=/api/v1/status
+ARG STATUS_PATH=/status
 
 # Setup healthcheck
-HEALTHCHECK --interval=10s --timeout=2s --start-period=15s \
-    CMD PORT=$PORT STATUS_PATH=$STATUS_PATH node /app/healthcheck.js
+# HEALTHCHECK --interval=10s --timeout=2s --start-period=15s \
+#     CMD PORT=$PORT STATUS_PATH=$STATUS_PATH node /app/healthcheck.js
+
+# Very secure
+USER root
 
 # Execute NodeJS (not NPM script) to handle SIGTERM and SIGINT signals.
 CMD ["node", "./build/index.js"]
+

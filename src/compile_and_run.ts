@@ -9,6 +9,7 @@ import {
     TEST_FAILED_CODE,
     TIMEDOUT_CODE,
     UNKNOWN_FAILURE_CODE,
+    UNSUPPORTED_LANGUGAGE,
 } from "./lib";
 
 const exec = promisify(child_process.exec);
@@ -27,7 +28,6 @@ async function compileAndRun(
         responseCode: 999,
     };
 
-    const filePathRegex: RegExp = /src\/\d+\/([^:]+:\d+)/;
 
     return new Promise(async (resolve, reject) => {
         let compileCommand: string;
@@ -43,9 +43,8 @@ async function compileAndRun(
                 runCommand = `./${executableFilePath}`;
                 break;
             default:
-                console.error(`Unsupported language: ${exerciseTest.language}`);
                 return resolve({
-                    test_case_id: test_case_id,
+                    testCaseId: test_case_id,
                     reason: "Unsupported langugage",
                     responseCode: UNSUPPORTED_LANGUGAGE
                 });

@@ -89,4 +89,4 @@ function createFiles(
     appendFileSync(directoryPath, `${content}\n`, "utf8");
 }
 
-export { testRunnerRunner };
+export { testRunnerRunner, createFiles, createDirectory };

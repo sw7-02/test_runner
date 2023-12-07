@@ -44,14 +44,13 @@ async function runAllTests(
                 TIMEDOUT_CODE
             ) {
                 throw new Error("Test timed out");
-            else if (testResults[testResults.length - 1].responseCode == UNSUPPORTED_LANGUGAGE)
-                throw new Error("Unsupported language");
+            }
         }
     } catch (error) {
         console.error("Error has been found: " + error);
     } finally {
-        await deleteDirectory(`src/${exerciseTest.studentID}`).catch((error) => {
-            throw new Error(`Error deleting directory src/${exerciseTest.studentID}: ${error}`);
+        await deleteDirectory(`src/${parsedExerciseTest.userId}`).catch((error) => {
+            throw new Error(`Error deleting directory src/${parsedExerciseTest.userId}: ${error}`);
         });
 
         return testResults;

@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import {testRunnerRunner, createFiles, createDirectory} from "../src/converter";
 import * as fs from "fs";
 import { ExerciseTest } from '../src/lib';
-import { beforeEach } from 'mocha';
 import path from 'path';
 
 const exerciseTest: ExerciseTest = {

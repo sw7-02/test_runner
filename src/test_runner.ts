@@ -7,12 +7,10 @@ import { resolve } from "path";
 // receive API call (with JSON object)
 // TODO: Replace exerciseTest example with real data (some sort of handling)
 const exerciseTest = {
-    "language": "py",
+    "language": "c",
     "code": `int addTwoNumbers(int number1, int number2) {
     int sum;
-    while(1) {
         sum = number1 + number2;
-    }
     return sum;
 }
     `,
@@ -120,21 +118,21 @@ const exerciseTestJSON = JSON.stringify(exerciseTest, null, 2);
 // Parse JSON and cast to interfaces
 const parsedExerciseTest: ExerciseTest = JSON.parse(exerciseTestJSON);
 
-async function runCode (parsedExerciseTest: ExerciseTest): Promise<TestResponse[]> {
+async function runCode (exerciseTest: ExerciseTest): Promise<TestResponse[]> {
     // convert parsedExerciseTest to directories and files
-    testRunnerRunner(parsedExerciseTest);  
+    testRunnerRunner(exerciseTest);  
 
     // Call the async function
-    return await runAllTests();
+    return await runAllTests(exerciseTest);
 }
 
 // Compile and run tests
-async function runAllTests() : Promise<TestResponse[]> {
+async function runAllTests(exerciseTest: ExerciseTest) : Promise<TestResponse[]> {
     const testResults: TestResponse[] = [];
     try {
-        for (const testCase of parsedExerciseTest.testCases) {
+        for (const testCase of exerciseTest.testCases) {
             testResults.push((
-                await compileAndRun(parsedExerciseTest, testCase.code, testCase.testCaseId)));
+                await compileAndRun(exerciseTest, testCase.code, testCase.testCaseId)));
             
             console.log(`\ntest result: ${testResults[testResults.length - 1].responseCode}\n`)
             if (testResults[testResults.length - 1].responseCode == (`${COMPILATION_ERROR_CODE}` || `${EXECUTION_ERROR_CODE}`))
@@ -147,9 +145,13 @@ async function runAllTests() : Promise<TestResponse[]> {
     } catch (error) {
         console.error("OUTER ERROR HAS BEEN FOUND: " + error);
     } finally {
-        await deleteDirectory(`src/${parsedExerciseTest.studentID}`);
-        //console.log(testResults);
+        await deleteDirectory(`src/${exerciseTest.studentID}`).catch((error) => {
+            throw new Error(`Error deleting directory src/${exerciseTest.studentID}: ${error}`);
+        });
+
         return testResults;
+        //console.log(testResults);
+        
     }
 }
 
@@ -174,4 +176,4 @@ runCode(parsedExerciseTest)
         console.log(`Here: ${JSON.stringify(testResults)}`);
     })
 
-export {runCode, deleteDirectory};
+export {runCode, runAllTests, deleteDirectory};

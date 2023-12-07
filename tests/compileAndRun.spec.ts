@@ -1,6 +1,8 @@
+/// <reference types="mocha" />
+
 import {compileAndRun} from "../src/compile_and_run";
 import { expect } from 'chai';
-import { ExerciseTest, Language, TestResponse, COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE, UNSUPPORTED_LANGUGAGE } from '../src/lib';
+import { ExerciseTest, Language, TestResponse, COMPILATION_ERROR_CODE, EXECUTION_ERROR_CODE, TEST_PASSED_CODE, TEST_FAILED_CODE, UNSUPPORTED_LANGUGAGE, TIMEDOUT_CODE } from '../src/lib';
 import { testRunnerRunner } from "../src/converter";
 import path from "path";
 import * as fs from "fs";
@@ -176,8 +178,8 @@ describe('compileAndRun tests', () => {
         testRunnerRunner(exerciseTest); 
 
         const response: TestResponse = await compileAndRun(exerciseTest, exerciseTest.testCases[0].code, exerciseTest.testCases[0].testCaseId);
-
-        expect(response.responseCode).to.equal(`${TEST_PASSED_CODE}`);
+      
+        expect(`${TEST_PASSED_CODE}`).to.equal(response.responseCode);
         expect(response.reason).to.include('Test passed');
     });
     
@@ -200,7 +202,7 @@ describe('compileAndRun tests', () => {
 
         const response: TestResponse = await compileAndRun(exerciseTest, exerciseTest.testCases[0].code, exerciseTest.testCases[0].testCaseId);
 
-        expect(response.responseCode).to.equal(`${TEST_FAILED_CODE}`);
+        expect(`${TEST_FAILED_CODE}`).to.equal(response.responseCode);
         expect(response.reason).to.include('Test failed');
     });
 
@@ -225,12 +227,12 @@ describe('compileAndRun tests', () => {
         const response: TestResponse = 
             await compileAndRun(exerciseTest, exerciseTest.testCases[0].code, exerciseTest.testCases[0].testCaseId);
 
-        expect(response.responseCode).to.equal(`${COMPILATION_ERROR_CODE}`);
+        expect(`${COMPILATION_ERROR_CODE}`).to.equal(response.responseCode);
         expect(response.reason).to.include(`error: expected ';' before '}'`);
     });
 
 /*
-    it('should compile and run C code with infinite loop', function() {
+    it('should compile and run C code with infinite loop', async function(done) {
         const exerciseTest: ExerciseTest = {
             studentID: 'testStudent',
             language: Language.C,
@@ -245,8 +247,17 @@ describe('compileAndRun tests', () => {
                 `,
             testCases: [{ "testCaseId": "1", "code": testCodePassed}]
         };
+
+        const response: TestResponse = 
+            await compileAndRun(exerciseTest, exerciseTest.testCases[0].code, exerciseTest.testCases[0].testCaseId);
+
+        done();
+
+        expect(response.responseCode).to.equal(`${TIMEDOUT_CODE}`);
+        expect(response.reason).to.include(`Timed out`);
     });
-*/
+    */
+
 
 /*
     it('should handle execution errors', async () => {
@@ -276,8 +287,63 @@ describe('compileAndRun tests', () => {
         const response: TestResponse = 
             await compileAndRun(exerciseTest, exerciseTest.testCases[0].code, exerciseTest.testCases[0].testCaseId);
 
-        expect(response.responseCode).to.equal(`${UNSUPPORTED_LANGUGAGE}`);
+        expect(`${UNSUPPORTED_LANGUGAGE}`).to.equal(response.responseCode);
         expect(response.reason).to.include(`Unsupported langugage`);
+    });
+
+    it('file only contains exercise code template, should fail test cases', async () => {
+        const exerciseTest: ExerciseTest = {
+            studentID: 'testStudent',
+            language: Language.C,
+            code: 
+            `int addTwoNumbers(int number1, int number2) {
+            }
+                `,
+            testCases: [{ "testCaseId": "1", "code": testCodePassed}]
+        };
+
+        // creates all directories and files necessary to perform test
+        testRunnerRunner(exerciseTest); 
+
+        const response: TestResponse = 
+            await compileAndRun(exerciseTest, exerciseTest.testCases[0].code, exerciseTest.testCases[0].testCaseId);
+
+        expect(`${TEST_FAILED_CODE}`).to.equal(response.responseCode);
+        expect(response.reason).to.include(`Test failed`);
+    });
+
+    it('empty exercise file, should return compile error', async () => {
+        const exerciseTest: ExerciseTest = {
+            studentID: 'testStudent',
+            language: Language.C,
+            code: ``,
+            testCases: [{ "testCaseId": "1", "code": testCodePassed}]
+        };
+
+        // creates all directories and files necessary to perform test
+        testRunnerRunner(exerciseTest); 
+
+        const response: TestResponse = 
+            await compileAndRun(exerciseTest, exerciseTest.testCases[0].code, exerciseTest.testCases[0].testCaseId);
+
+        expect(`${COMPILATION_ERROR_CODE}`).to.equal(response.responseCode);
+    });
+
+    it('empty test case file, should return compile error', async () => {
+        const exerciseTest: ExerciseTest = {
+            studentID: 'testStudent',
+            language: Language.C,
+            code: ``,
+            testCases: [{ "testCaseId": "1", "code": ""}]
+        };
+
+        // creates all directories and files necessary to perform test
+        testRunnerRunner(exerciseTest); 
+
+        const response: TestResponse = 
+            await compileAndRun(exerciseTest, exerciseTest.testCases[0].code, exerciseTest.testCases[0].testCaseId);
+
+        expect(`${COMPILATION_ERROR_CODE}`).to.equal(response.responseCode);
     });
 
 });

@@ -18,6 +18,8 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
         responseCode: ""
     }
 
+    const filePathRegex: RegExp = /src\/\d+\/([^:]+:\d+)/;
+
     return new Promise(async (resolve, reject) => {
         let compileCommand: string;
         let runCommand: string;
@@ -59,8 +61,12 @@ async function compileAndRun(exerciseTest: ExerciseTest, testCode: string, test_
                 var result = res.stdout.substring(res.stdout.indexOf("Test"));
                 response.reason = result;
                 //TODO: better logic for identifieng failure and passes
-                if (result.includes("Test failed"))
+                if (result.includes("Test failed")){
                     response.responseCode = `${TEST_FAILED_CODE}`;
+
+                    // Use the exec method to extract the file path from the input string
+                    response.reason = result.replace(filePathRegex, '');
+                }
                 else if (result.includes("Test passed"))
                     response.responseCode = `${TEST_PASSED_CODE}`;
                 else

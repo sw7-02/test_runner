@@ -28,6 +28,8 @@
     },
     "dependencies": {
         "arg": "^5.0.2",
+        "chai": "^4.3.4",
+        "chai-http": "^4.4.0",
         "cors": "^2.8.5",
         "express": "^4.18.2",
         "helmet": "^7.0.0",

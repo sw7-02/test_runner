@@ -7,7 +7,7 @@ import cors from "cors";
 import { ExerciseTest } from "./lib";
 import { runCode } from "./test_runner"
 
-const app = express();
+export const app = express();
 
 // Call middlewares
 app.use(cors());
@@ -27,8 +27,6 @@ app.post("/", async (req, res) => {
         return res.status(400).send("No student ID provided")
     else if (exerciseTest.testCases.length = 0)
         return res.status(400).send("No tests provided");
-    
-    // TODO: handle thrown errors
 
     const testResults = await runCode(exerciseTest);
     return res.send(testResults);

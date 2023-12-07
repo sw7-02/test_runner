@@ -26,10 +26,7 @@ async function runAllTests(
     try {
         for (const testCase of parsedExerciseTest.testCases) {
             testResults.push(
-                await compileAndRun(
-                    parsedExerciseTest,
-                    testCase.testCaseId,
-                ),
+                await compileAndRun(parsedExerciseTest, testCase.testCaseId),
             );
 
             console.log(

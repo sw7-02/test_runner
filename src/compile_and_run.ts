@@ -68,7 +68,7 @@ async function compileAndRun(
                 else if (result.includes("Test passed"))
                     response.responseCode = TEST_PASSED_CODE;
                 else response.responseCode = UNKNOWN_FAILURE_CODE;
-                
+
                 resolve(response);
             },
             (reason) => {

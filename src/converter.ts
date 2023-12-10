@@ -84,9 +84,15 @@ function createFiles(
     content: string,
     include?: string,
 ): void {
-    if (include) appendFileSync(directoryPath, `${include}\n`, "utf8");
+    if (existsSync(directoryPath)) {
+        console.log(`File "${directoryPath}" already exists.`);
+        return;
+    } else {
+        if (include != undefined)
+            appendFileSync(directoryPath, `${include}\n`, "utf8");
 
-    appendFileSync(directoryPath, `${content}\n`, "utf8");
+        appendFileSync(directoryPath, `${content}\n`, "utf8");
+    }
 }
 
 export { testRunnerRunner, createFiles, createDirectory };

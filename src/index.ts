@@ -1,9 +1,7 @@
 import express from "express";
-//import express = require("express");//Lukas skal køre det sådan her
 import * as bodyParser from "body-parser";
 import helmet from "helmet";
 import cors from "cors";
-//import cors = require("cors");//Lukas skal køre det sådan her
 import {
     COMPILATION_ERROR_CODE,
     ExerciseTest,

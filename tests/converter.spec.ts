@@ -7,6 +7,7 @@ import {
 import * as fs from "fs";
 import { ExerciseTest } from "../src/lib";
 import path from "path";
+import { spy } from "sinon";
 
 const exerciseTest: ExerciseTest = {
     userId: "testStudent",
@@ -42,7 +43,6 @@ describe("testRunnerRunner tests", () => {
         expect(testFileExists).to.be.true;
         expect(testCaseFileExists).to.be.true;
     });
-    // Add more test cases as needed
 });
 
 describe("createDirectories tests", () => {
@@ -62,18 +62,26 @@ describe("createDirectories tests", () => {
         expect(fs.existsSync(localDirectoryPath)).to.be.true;
     });
 
-    // TODO: mangler en der laver et directory der allerede findes.
-/*
-    it('create a new directory that already exists, catch error', () => {
-        const localDirectoryPath = path.join(__dirname, `../src/${exerciseTest.userId}`);
+    it("create a new directory that already exists, catch error", () => {
+        const localDirectoryPath = path.join(
+            __dirname,
+            `../${exerciseTest.userId}`,
+        );
+        // Spy on console.log to capture its output
+        const consoleSpy = spy(console, "log");
+
         createDirectory(localDirectoryPath);
-        
-        //expect(fs.existsSync(localDirectoryPath)).to.be.true;
+        createDirectory(localDirectoryPath);
 
+        // Restore the spy
+        consoleSpy.restore();
 
-        //expect(createDirectory(localDirectoryPath)).to.(Error(`Directory already exists!`));
-        
-    });*/
+        expect(
+            consoleSpy.calledWith(
+                `Directory ${localDirectoryPath} already exists!`,
+            ),
+        ).to.be.true;
+    });
 });
 
 describe("createFiles tests", () => {
@@ -102,6 +110,28 @@ describe("createFiles tests", () => {
         createFiles(localDirectoryPath, "", "");
 
         expect(fs.existsSync(localDirectoryPath)).to.be.true;
+        fs.rmSync(localDirectoryPath);
+    });
+
+    it("create a new file that already exists", () => {
+        const localDirectoryPath = path.join(
+            __dirname,
+            `../tests/${exerciseTest.userId}.c`,
+        );
+        const consoleSpy = spy(console, "log");
+
+        createFiles(localDirectoryPath, "");
+        expect(fs.existsSync(localDirectoryPath)).to.be.true;
+        createFiles(localDirectoryPath, "");
+
+        // Restore the spy
+        consoleSpy.restore();
+
+        expect(
+            consoleSpy.calledWith(
+                `File "${localDirectoryPath}" already exists.`,
+            ),
+        ).to.be.true;
         fs.rmSync(localDirectoryPath);
     });
 });

@@ -11,15 +11,14 @@ import {
     TEST_FAILED_CODE,
     TIMEDOUT_CODE,
     UNSUPPORTED_LANGUGAGE,
+    UNKNOWN_FAILURE_CODE,
 } from "../src/lib";
 import { testRunnerRunner } from "../src/converter";
 import path from "path";
 import * as fs from "fs";
 
 const testCodePassed: string = `CU_ASSERT(addTwoNumbers(1, 2) == 3);`;
-
 const testCodeFailed: string = `CU_ASSERT(addTwoNumbers(1, 2) == 4);`;
-
 const testCodeWithSyntaxError: string = `CU_ASSERT(addTwoNumbers(1, 2) == 3);`;
 
 describe("compileAndRun tests", () => {
@@ -37,8 +36,7 @@ describe("compileAndRun tests", () => {
                 int sum;
                 sum = number1 + number2;
                 return sum;
-            }
-                `,
+            }`,
             testCases: [{ testCaseId: "1", code: testCodePassed }],
         };
 
@@ -103,33 +101,6 @@ describe("compileAndRun tests", () => {
         expect(COMPILATION_ERROR_CODE).to.equal(response.responseCode);
         expect(response.reason).to.include(`error: expected '=', ',', ';',`);
     });
-
-    /*
-    it('should compile and run C code with infinite loop', async function(done) {
-        const exerciseTest: ExerciseTest = {
-            studentID: 'testStudent',
-            language: Language.C,
-            code: 
-            `int addTwoNumbers(int number1, int number2) {
-                int sum;
-                while(true){
-                    sum = number1 + number2;
-                }
-                return sum;
-            }
-                `,
-            testCases: [{ "testCaseId": "1", "code": testCodePassed}]
-        };
-
-        const response: TestResponse = 
-            await compileAndRun(exerciseTest, exerciseTest.testCases[0].code, exerciseTest.testCases[0].testCaseId);
-
-        done();
-
-        expect(response.responseCode).to.equal(`${TIMEDOUT_CODE}`);
-        expect(response.reason).to.include(`Timed out`);
-    });
-    */
 
     it("should handle not supported languages", async () => {
         const exerciseTest: ExerciseTest = {

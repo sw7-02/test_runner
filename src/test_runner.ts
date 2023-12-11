@@ -49,22 +49,30 @@ async function runAllTests(
     } catch (error) {
         console.error("Error has been found: " + error);
     } finally {
-        deleteDirectory(`${parsedExerciseTest.userId}`);
-        //console.log(testResults);
+        await deleteDirectory(`${parsedExerciseTest.userId}`).catch((error) => {
+            throw new Error(
+                `Error deleting directory ${parsedExerciseTest.userId}: ${error}`,
+            );
+        });
+
+        return testResults;
     }
-    return testResults;
 }
 
-function deleteDirectory(directoryPath: string): void {
-    fs.rm(directoryPath, { recursive: true }, (err) => {
-        if (err) {
-            console.error(
-                `Error deleting directory ${directoryPath}:` + err.message,
-            );
-            return;
-        }
-        console.log(`Directory ${directoryPath} deleted successfully.`);
+async function deleteDirectory(directoryPath: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        fs.rm(directoryPath, { recursive: true }, (err) => {
+            if (err) {
+                console.error(
+                    `Error deleting directory ${directoryPath}: ${err.message}`,
+                );
+                reject(err);
+            } else {
+                console.log(`Directory ${directoryPath} deleted successfully.`);
+                resolve();
+            }
+        });
     });
 }
 
-export { runCode };
+export { runCode, runAllTests, deleteDirectory };

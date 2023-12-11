@@ -99,7 +99,7 @@ describe("compileAndRun tests", () => {
         );
 
         expect(COMPILATION_ERROR_CODE).to.equal(response.responseCode);
-        expect(response.reason).to.include(`error: expected '=', ',', ';',`);
+        expect(response.reason).to.include(`error: expected ‘=’, ‘,’, ‘;’`);
     });
 
     it("should handle not supported languages", async () => {

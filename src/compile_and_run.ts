@@ -9,6 +9,7 @@ import {
     TEST_FAILED_CODE,
     TIMEDOUT_CODE,
     UNKNOWN_FAILURE_CODE,
+    UNSUPPORTED_LANGUGAGE,
 } from "./lib";
 
 const exec = promisify(child_process.exec);
@@ -41,9 +42,11 @@ async function compileAndRun(
                 runCommand = `./${executableFilePath}`;
                 break;
             default:
-                console.error(`Unsupported language: ${exerciseTest.language}`);
-                reject(`Unsupported Language: ${exerciseTest.language}`);
-                return process.exit(1);
+                return resolve({
+                    testCaseId: test_case_id,
+                    reason: "Unsupported langugage",
+                    responseCode: UNSUPPORTED_LANGUGAGE,
+                });
         }
 
         // Compile the code
@@ -63,6 +66,7 @@ async function compileAndRun(
                 var result = res.stdout.substring(res.stdout.indexOf("Test"));
                 response.reason = result;
                 //TODO: better logic for identifieng failure and passes
+
                 if (result.includes("Test failed"))
                     response.responseCode = TEST_FAILED_CODE;
                 else if (result.includes("Test passed"))

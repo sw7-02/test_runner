@@ -1,5 +1,4 @@
-import fs from "fs";
-//import * as fs from "fs"; //Lukas skal køre det sådan her
+const UNSUPPORTED_LANGUGAGE = 5;
 const UNKNOWN_FAILURE_CODE = 4;
 const TIMEDOUT_CODE = 3;
 const COMPILATION_ERROR_CODE = 2;
@@ -29,22 +28,14 @@ interface TestCase {
     code: string;
 }
 
-function readFromFile(filePath: string): string {
-    try {
-        return fs.readFileSync(filePath, "utf-8");
-    } catch (error) {
-        process.exit(1);
-    }
-}
-
 export {
     Language,
     TestResponse,
     ExerciseTest,
-    readFromFile,
     UNKNOWN_FAILURE_CODE,
     COMPILATION_ERROR_CODE,
     TEST_PASSED_CODE,
     TEST_FAILED_CODE,
     TIMEDOUT_CODE,
+    UNSUPPORTED_LANGUGAGE,
 };

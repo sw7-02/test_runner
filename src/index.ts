@@ -1,9 +1,7 @@
 import express from "express";
-//import express = require("express");//Lukas skal køre det sådan her
 import * as bodyParser from "body-parser";
 import helmet from "helmet";
 import cors from "cors";
-//import cors = require("cors");//Lukas skal køre det sådan her
 import {
     COMPILATION_ERROR_CODE,
     ExerciseTest,
@@ -12,7 +10,7 @@ import {
 } from "./lib";
 import { runCode } from "./test_runner";
 
-const app = express();
+export const app = express();
 
 // Call middlewares
 app.use(cors());
@@ -51,8 +49,6 @@ app.post("/", async (req, res) => {
         res.status(400).send(validated);
         return;
     }
-
-    // TODO: handle thrown errors
 
     const testResults = await runCode(exerciseTest);
 

@@ -86,7 +86,7 @@ jobs:
   ghcr-publish:
     needs:
       - fmt
-      - build-linux
+        #- build-linux
         #- build-win
         #- build-mac
     permissions:

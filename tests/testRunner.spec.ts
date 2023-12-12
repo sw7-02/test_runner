@@ -67,7 +67,6 @@ describe("runAllTests tests", () => {
     it("throw error from deleting directory that doesn't exist", async () => {
         const directoryPath = `../testStudent`;
 
-
         try {
             await deleteDirectory("../testStudent");
             assert.fail("The deletion should have thrown an error");
@@ -140,7 +139,6 @@ describe("runCode tests", () => {
         expect(testResults[0].responseCode).to.equal(COMPILATION_ERROR_CODE);
         expect(testResults[0].reason).to.include(
             `error: expected ‘=’, ‘,’, ‘;’`,
-            
         );
     });
 
